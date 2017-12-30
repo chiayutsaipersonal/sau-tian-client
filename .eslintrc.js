@@ -17,9 +17,11 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    // allow async-await
-    'generator-star-spacing': 'off',
-    // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'arrow-parens': ['error', 'as-needed'],
+    'comma-dangle': ['error', 'always-multiline'],
+    'generator-star-spacing': 'off', // allow async-await
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off', // allow debugger during development
+    quotes: ['error', 'single'],
+    semi: ['error', 'never']
   }
 }
