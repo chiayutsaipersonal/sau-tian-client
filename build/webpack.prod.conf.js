@@ -9,6 +9,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const htmlWebpackTemplate = require('html-webpack-template')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const env = require('../config/prod.env')
@@ -29,15 +30,9 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
-    new webpack.DefinePlugin({
-      'process.env': env
-    }),
+    new webpack.DefinePlugin({ 'process.env': env }),
     new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          warnings: false
-        }
-      },
+      uglifyOptions: { compress: { warnings: false } },
       sourceMap: config.build.productionSourceMap,
       parallel: true
     }),
@@ -46,7 +41,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: utils.assetsPath('css/[name].[contenthash].css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
-      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`, 
+      // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
       // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
       allChunks: true,
     }),
@@ -63,11 +58,22 @@ const webpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: config.build.index,
       template: 'index.html',
-      inject: true,
+      template: htmlWebpackTemplate,
+      inject: false,
+      appMountId: 'app',
+      title: config.appTitle,
+      lang: 'zh',
+      mobile: {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1'
+      },
+      links: ['https://use.fontawesome.com/releases/v5.0.2/css/all.css'],
+      headHtmlSnippet: '<link href="/favicon.ico" rel="shortcut icon">',
       minify: {
         removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
+        collapseWhitespace: false,
+        removeAttributeQuotes: false,
+        preserveLineBreaks: true,
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
