@@ -8,6 +8,7 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const htmlWebpackTemplate = require('html-webpack-template')
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
@@ -64,6 +65,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         content: 'width=device-width, initial-scale=1'
       },
       links: ['https://use.fontawesome.com/releases/v5.0.2/css/all.css'],
+      headHtmlSnippet: `<style>html,body{height:98%;padding:0px;margin:0px;}</style>`,
+      alwaysWriteToDisk: true,
       minify: {
         removeComments: false,
         collapseWhitespace: true,
@@ -72,6 +75,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
+    }),
+    new HtmlWebpackHarddiskPlugin({
+      outputPath: 'dist/public'
     }),
   ]
 })
