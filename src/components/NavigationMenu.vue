@@ -1,0 +1,104 @@
+<template>
+  <aside id="navigation-menu">
+    <button
+      class="button is-outlined is-fullwidth"
+      @click="switchRoute('/sauTian')"
+    >
+      系統首頁
+    </button>
+    <button
+      class="button is-outlined is-fullwidth"
+      @click="switchRoute('/sauTian/invoices')"
+    >
+      銷售資料
+    </button>
+    <button
+      class="button is-outlined is-fullwidth"
+      @click="switchRoute('/sauTian/clients')"
+    >
+      客戶列表
+    </button>
+    <button
+      class="button is-outlined is-fullwidth"
+      @click="switchRoute('/sauTian/products')"
+    >
+      產品列表
+    </button>
+    <br>
+    <button
+      class="button is-outlined is-fullwidth"
+      :disabled="!routeDataReady"
+      @click="reloadRouteData"
+    >
+      重新載入
+    </button>
+    <button
+      class="button is-outlined is-fullwidth"
+      disabled
+    >
+      輸出報告
+    </button>
+  </aside>
+</template>
+
+<script>
+export default {
+  name: 'NavigationBar',
+  data () {
+    return {
+      labelLookup: {
+        products: '產品',
+        clients: '客戶',
+        invoices: '銷售',
+      },
+    }
+  },
+  computed: {
+    routeDataReady: function () {
+      if (this.$route.name === 'home') return false
+      return this.$store.state[this.$route.name].recordCount
+    },
+  },
+  methods: {
+    reloadRouteData: function () {
+      return this.$store
+        .dispatch(`${this.$route.name}/fetch`, {
+          perPage: 15,
+          page: 1,
+        })
+        .then(() => Promise.resolve())
+        .catch(error => {
+          console.error(error)
+          return this.$dialog.alert({
+            title: '錯誤',
+            message: `${this.labelLookup[this.$route.name]}資料表讀取異常`,
+            type: 'is-danger',
+            hasIcon: true,
+            icon: 'times-circle',
+            iconPack: 'fa',
+          })
+        })
+    },
+    switchRoute: function (path) {
+      this.$router.push(path)
+    },
+  },
+}
+</script>
+
+<style scoped>
+#navigation-menu {
+  grid-column: 1 / 3;
+  justify-self: start;
+  align-self: start;
+  padding: 0;
+}
+
+button {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
