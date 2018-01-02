@@ -4,8 +4,9 @@ const products = {
   namespaced: true,
   actions: {
     fetch: (context, payload) => {
+      context.commit('clearData')
       let url = '/sauTian/api/products'
-      if (payload) url += `?per_page=${payload.perPage}&page=${payload.page}`
+      if (payload) url += `?per_page=${payload.perPage}&page=${payload.currentPage}`
       context.commit('setLoadingState', true)
       return axios({
         method: 'get',
@@ -22,27 +23,40 @@ const products = {
     },
   },
   mutations: {
+    clearData: state => {
+      state.data = []
+    },
     register: (state, payload) => {
       state.data = payload.data
       if (payload.pagination) {
+        state.totalRecords = payload.pagination.totalRecords
         state.perPage = payload.pagination.perPage
-        state.pageCount = payload.pagination.totalPages
-        state.current = payload.pagination.currentPage
-        state.recordCount = payload.pagination.totalRecords
+        state.totalPages = payload.pagination.totalPages
+        state.currentPage = payload.pagination.currentPage
         state.first = payload.pagination.first || null
         state.prev = payload.pagination.prev || null
         state.self = payload.pagination.self || null
         state.next = payload.pagination.next || null
         state.last = payload.pagination.last || null
+      } else {
+        state.totalRecords = state.data.length
+        state.perPage = state.data.length
+        state.totalPages = 1
+        state.currentPage = 1
+        state.first = null
+        state.prev = null
+        state.self = null
+        state.next = null
+        state.last = null
       }
     },
     reset: state => {
-      state.data = []
       state.loading = false
-      state.perPage = null
-      state.pageCount = null
-      state.current = null
-      state.recordCount = null
+      state.data = []
+      state.totalRecords = 0
+      state.perPage = 10
+      state.totalPages = 0
+      state.currentPage = 1
       state.first = null
       state.prev = null
       state.self = null
@@ -54,29 +68,15 @@ const products = {
     },
   },
   getters: {
-    productData: state => state.data,
     isLoading: state => state.loading,
-    paginationData: state => {
-      return state.perPage ? {
-        perPage: state.perPage,
-        pageCount: state.pageCount,
-        current: state.current,
-        recordCount: state.recordCount,
-        first: state.first,
-        prev: state.prev,
-        self: state.self,
-        next: state.next,
-        last: state.last,
-      } : null
-    },
   },
   state: {
-    data: [],
     loading: false,
-    perPage: null,
-    pageCount: null,
-    current: null,
-    recordCount: null,
+    data: [],
+    totalRecords: 0,
+    perPage: 10,
+    totalPages: 0,
+    currentPage: 1,
     first: null,
     prev: null,
     self: null,

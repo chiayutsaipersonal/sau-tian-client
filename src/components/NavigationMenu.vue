@@ -3,28 +3,37 @@
     <button
       class="button is-outlined is-fullwidth"
       @click="switchRoute('/sauTian')"
+      :disabled="this.$route.name==='home'"
     >
       系統首頁
     </button>
+
     <button
       class="button is-outlined is-fullwidth"
       @click="switchRoute('/sauTian/invoices')"
+      disabled
     >
       銷售資料
     </button>
+
     <button
       class="button is-outlined is-fullwidth"
       @click="switchRoute('/sauTian/clients')"
+      disabled
     >
       客戶列表
     </button>
+
     <button
       class="button is-outlined is-fullwidth"
       @click="switchRoute('/sauTian/products')"
+      :disabled="this.$route.name==='products'"
     >
       產品列表
     </button>
+
     <br>
+
     <button
       class="button is-outlined is-fullwidth"
       :disabled="!routeDataReady"
@@ -32,6 +41,7 @@
     >
       重新載入
     </button>
+
     <button
       class="button is-outlined is-fullwidth"
       disabled
@@ -62,10 +72,7 @@ export default {
   methods: {
     reloadRouteData: function () {
       return this.$store
-        .dispatch(`${this.$route.name}/fetch`, {
-          perPage: 15,
-          page: 1,
-        })
+        .dispatch(`${this.$route.name}/fetch`)
         .then(() => Promise.resolve())
         .catch(error => {
           console.error(error)

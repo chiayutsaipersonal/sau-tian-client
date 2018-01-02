@@ -3,6 +3,7 @@
   <div
     id="footer-bar"
     class="level"
+    :disabled="loading"
   >
     <div class="left-left">
       <div class="level-item" />
@@ -10,73 +11,82 @@
     <div class="level-right">
       <div class="level-item">
         <button
-          class="pagination-first button is-medium is-outlined"
-          style="color:#7957d5;margin-right:8px;"
+          class="pagination-first button is-small is-outlined"
           @click="changePage(perPage, 1)"
-          :disabled="current===1||current===null"
+          :disabled="currentPage===1||currentPage===null"
         >
-          <span class="icon is-medium">
+          <span class="icon is-small">
             <i class="fa fa-angle-double-left fa-lg" />
           </span>
         </button>
         <section>
           <b-pagination
-            :total="total"
-            :current="current"
-            :order="'is-centered'"
-            :size="'is-medium'"
-            :simple="false"
+            :total="totalRecords"
             :per-page="perPage"
+            :current="currentPage"
+            :order="'is-centered'"
+            :size="'is-small'"
+            :simple="false"
             @update:current="changePage(perPage, $event)"
           />
         </section>
         <button
-          class="pagination-last button is-medium is-outlined"
-          style="color:#7957d5;margin-left:8px;"
-          @click="changePage(perPage, lastPage)"
-          :disabled="current===lastPage"
+          class="pagination-last button is-small is-outlined"
+          @click="changePage(perPage, totalPages)"
+          :disabled="currentPage===totalPages"
         >
-          <span class="icon is-medium">
+          <span class="icon is-small">
             <i class="fa fa-angle-double-right fa-lg" />
           </span>
         </button>
       </div>
       <div class="level-item">
         <b-select
-          placeholder="頁數"
-          size="is-medium"
+          :placeholder="currentPage.toString()"
+          size="is-small"
+          :disabled="totalPages===1"
           @input="changePage(perPage, $event)"
-          :disabled="current===null"
         >
-          <template
-            v-for="pageNumber in lastPage"
+          <option
+            v-for="pageNumber in totalPages"
             :value="pageNumber"
+            :disabled="pageNumber===currentPage"
+            :key="pageNumber"
           >
-            <option
-              v-if="pageNumber !== current"
-              :key="pageNumber"
-            >
-              {{ pageNumber }}
-            </option>
-            <option
-              v-else
-              disabled
-              :key="pageNumber"
-            >
-              {{ pageNumber }}
-            </option>
-          </template>
+            {{ pageNumber }}
+          </option>
         </b-select>
       </div>
       <div class="level-item">
         <b-select
-          placeholder="資料筆數"
-          size="is-medium"
+          :placeholder="perPage.toString()"
+          size="is-small"
           @input="changePage($event, 1)"
         >
-          <option value="15">15</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
+          <option
+            value="10"
+            :disabled="perPage===10"
+          >10</option>
+          <option
+            value="25"
+            :disabled="perPage===25"
+          >25</option>
+          <option
+            value="50"
+            :disabled="perPage===50"
+          >50</option>
+          <option
+            value="100"
+            :disabled="perPage===100"
+          >100</option>
+          <option
+            value="250"
+            :disabled="perPage===250"
+          >250</option>
+          <option
+            value="500"
+            :disabled="perPage===500"
+          >500</option>
           <option value="0">全數</option>
         </b-select>
       </div>
@@ -100,20 +110,18 @@ export default {
   },
   computed: {
     ...mapState('products', {
-      total: 'recordCount',
-      lastPage: 'pageCount',
-      current: 'current',
+      loading: 'loading',
+      totalRecords: 'totalRecords',
       perPage: 'perPage',
+      totalPages: 'totalPages',
+      currentPage: 'currentPage',
     }),
   },
   methods: {
-    changePage (recordsPerPage, pageNumber) {
-      let paginationQuery = recordsPerPage === '0'
+    changePage (perPage, currentPage) {
+      let paginationQuery = perPage === '0'
         ? null
-        : {
-          perPage: recordsPerPage,
-          page: pageNumber,
-        }
+        : { perPage, currentPage }
       return this.$store
         .dispatch(`${this.$route.name}/fetch`, paginationQuery)
         .then(() => Promise.resolve())
@@ -136,6 +144,15 @@ export default {
 <style scoped>
 #footer-bar {
   grid-column: 1 / -1;
+}
+
+.pagination-first {
+  color: #7957d5;
+  margin-right: 8px;
+}
+.pagination-last {
+  color: #7957d5;
+  margin-left: 8px;
 }
 
 .pagination-first[disabled],

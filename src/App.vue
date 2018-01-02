@@ -11,7 +11,7 @@
       <router-view/>
     </div>
 
-    <footer-bar v-if="this.$route.name!=='home'" />
+    <footer-bar v-if="activateFootbar" />
   </div>
 </template>
 
@@ -23,6 +23,11 @@ import FooterBar from '@/components/FooterBar'
 export default {
   name: 'App',
   components: { TitleBar, NavigationMenu, FooterBar },
+  computed: {
+    activateFootbar: function () {
+      return this.$route.name === 'products'
+    },
+  },
 }
 </script>
 
@@ -42,7 +47,7 @@ export default {
   display: grid;
   grid-gap: 3px;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: 100px auto 100px;
+  grid-template-rows: auto 530px 10px;
 }
 
 .content::-webkit-scrollbar {

@@ -2,15 +2,12 @@
   <div id="product-page">
     <section>
       <b-table
-        :data="isEmpty ? [] : productData"
         :bordered="false"
         :striped="true"
-        :narrowed="true"
+        :narrowed="false"
         :hoverable="true"
+        :data="data"
         :loading="loading"
-        :mobile-cards="false"
-        :selected.sync="selected"
-        @update:selected="editMode=true"
       >
         <template slot-scope="props">
 
@@ -74,17 +71,15 @@
         <template slot="empty">
           <section class="section">
             <div class="content has-text-grey has-text-centered">
-              <p>
-                <b-icon
-                  icon="minus-circle"
-                  size="is-large"
-                />
-              </p>
-              <p>資料不存在</p>
+              <p v-if="loading">系統正在讀取產品資料</p>
+              <p v-else>未發現可顯示產品資料</p>
             </div>
           </section>
         </template>
-        <template slot="footer">
+        <template
+          slot="footer"
+          v-if="!isEmpty"
+        >
           <th>
             <div class="th-wrap">
               編號
@@ -118,64 +113,61 @@
         </template>
       </b-table>
     </section>
-
-    <b-modal
-      :active.sync="editMode"
-      has-modal-card
-    >
-      <product-edit-form :record="selected" />
-    </b-modal>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-
-import ProductEditForm from '@/components/ProductEditForm'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'ProductPage',
-  components: { ProductEditForm },
-  data () {
-    return {
-      editMode: false,
-      selected: null,
-    }
-  },
+  components: {},
+  data () { return {} },
   computed: {
     ...mapState('products', {
       loading: 'loading',
-      productData: 'data',
+      data: 'data',
+      totalRecords: 'totalRecords',
+      perPage: 'perPage',
+      totalPages: 'totalPages',
+      currentPage: 'currentPage',
     }),
-    isEmpty: function () { return this.productData.length === 0 },
+    isEmpty: function () { return this.totalRecords === 0 },
   },
   mounted: function () {
-    if (this.productData.length === 0) {
-      return this.fetchProductData({
-        perPage: 15,
-        page: 1,
-      }).then(() => {
-        return Promise.resolve()
-      }).catch(error => {
-        console.error(error)
-        return this.$dialog.alert({
-          title: '錯誤',
-          message: '產品資料表讀取異常',
-          type: 'is-danger',
-          hasIcon: true,
-          icon: 'times-circle',
-          iconPack: 'fa',
+    if (this.isEmpty) {
+      return this
+        .fetch({
+          perPage: this.perPage,
+          currentPage: this.currentPage,
         })
-      })
+        .catch(error => {
+          console.error(error)
+          return this.$dialog.alert({
+            title: '錯誤',
+            message: '產品資料表讀取異常',
+            type: 'is-danger',
+            hasIcon: true,
+            icon: 'times-circle',
+            iconPack: 'fa',
+          })
+        })
     }
   },
+  beforeDestroy: function () {
+    this.reset()
+  },
   methods: {
-    ...mapActions('products', { fetchProductData: 'fetch' }),
+    ...mapActions('products', { fetch: 'fetch' }),
+    ...mapMutations('products', { reset: 'reset' }),
   },
 }
 </script>
 
 <style scoped>
+ul {
+  list-style: none;
+}
 div.content.has-text-grey {
   overflow: hidden;
 }
