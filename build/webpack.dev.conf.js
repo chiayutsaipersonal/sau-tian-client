@@ -65,7 +65,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         content: 'width=device-width, initial-scale=1'
       },
       links: ['https://use.fontawesome.com/releases/v5.0.2/css/all.css'],
-      headHtmlSnippet: `<style>html,body{height:98%;padding:0px;margin:0px;}</style>`,
+      headHtmlSnippet: `
+      <style>
+        html::-webkit-scrollbar {
+            width: 0 !important;
+        }
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -ms-overflow-style: none;
+            overflow: -moz-scrollbars-none;
+        }
+        body {
+          height: 98%;
+          padding: 0px;
+          margin: 0px;
+        }
+      </style>`,
       alwaysWriteToDisk: true,
       minify: {
         removeComments: false,
