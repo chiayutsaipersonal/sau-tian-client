@@ -7,22 +7,22 @@
 
     <navigation-menu/>
 
+    <pagination-control v-if="activateFootbar" />
+
     <div class="content">
       <router-view/>
     </div>
-
-    <footer-bar v-if="activateFootbar" />
   </div>
 </template>
 
 <script>
 import TitleBar from '@/components/TitleBar'
 import NavigationMenu from '@/components/NavigationMenu'
-import FooterBar from '@/components/FooterBar'
+import PaginationControl from '@/components/PaginationControl'
 
 export default {
   name: 'App',
-  components: { TitleBar, NavigationMenu, FooterBar },
+  components: { TitleBar, NavigationMenu, PaginationControl },
   computed: {
     activateFootbar: function () {
       return this.$route.name === 'products'
@@ -47,7 +47,7 @@ export default {
   display: grid;
   grid-gap: 3px;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: auto 530px 10px;
+  grid-template-rows: auto auto 500px;
 }
 
 .content::-webkit-scrollbar {
@@ -56,7 +56,8 @@ export default {
 
 .content {
   grid-column: 3 / -1;
-  align-self: stretch;
+  justify-self: stretch;
+  align-self: start;
   overflow-y: scroll;
   -ms-overflow-style: none;
   overflow: -moz-scrollbars-none;

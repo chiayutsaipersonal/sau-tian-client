@@ -1,7 +1,7 @@
 <template>
   <aside id="navigation-menu">
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       @click="switchRoute('/sauTian')"
       :disabled="this.$route.name==='home'"
     >
@@ -9,7 +9,7 @@
     </button>
 
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       @click="switchRoute('/sauTian/invoices')"
       disabled
     >
@@ -17,7 +17,7 @@
     </button>
 
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       @click="switchRoute('/sauTian/clients')"
       disabled
     >
@@ -25,7 +25,7 @@
     </button>
 
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       @click="switchRoute('/sauTian/products')"
       :disabled="this.$route.name==='products'"
     >
@@ -35,7 +35,7 @@
     <br>
 
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       :disabled="!routeDataReady"
       @click="reloadRouteData"
     >
@@ -43,7 +43,7 @@
     </button>
 
     <button
-      class="button is-outlined is-fullwidth"
+      class="button is-outlined is-fullwidth is-medium"
       disabled
     >
       輸出報告
@@ -66,13 +66,16 @@ export default {
   computed: {
     routeDataReady: function () {
       if (this.$route.name === 'home') return false
-      return this.$store.state[this.$route.name].recordCount
+      return this.$store.state[this.$route.name].totalRecords
     },
   },
   methods: {
     reloadRouteData: function () {
       return this.$store
-        .dispatch(`${this.$route.name}/fetch`)
+        .dispatch(`${this.$route.name}/fetch`, {
+          perPage: this.$store.state[this.$route.name].perPage,
+          currentPage: this.$store.state[this.$route.name].currentPage,
+        })
         .then(() => Promise.resolve())
         .catch(error => {
           console.error(error)
@@ -96,8 +99,9 @@ export default {
 <style scoped>
 #navigation-menu {
   grid-column: 1 / 3;
+  grid-row: 2 / -1;
   justify-self: start;
-  align-self: start;
+  align-self: stretch;
   padding: 0;
 }
 

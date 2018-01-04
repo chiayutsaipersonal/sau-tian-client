@@ -23,6 +23,13 @@ module.exports = {
     'generator-star-spacing': 'off', // allow async-await
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off', // allow debugger during development
     quotes: ['error', 'single'],
-    semi: ['error', 'never']
+    semi: ['error', 'never'],
+    "vue/max-attributes-per-line": ['error', {
+      "singleline": 1,
+      "multiline": {
+        "max": 1,
+        "allowFirstLine": true
+      }
+    }]
   }
 }

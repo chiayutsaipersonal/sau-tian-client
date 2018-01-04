@@ -1,15 +1,43 @@
 <template>
   <div id="product-page">
     <section>
-      <b-table
-        :bordered="false"
-        :striped="true"
-        :narrowed="false"
-        :hoverable="true"
-        :data="data"
-        :loading="loading"
-      >
+      <b-table :bordered="false"
+               :striped="true"
+               :narrowed="false"
+               :hoverable="true"
+               :data="indexedData"
+               :loading="loading"
+               :opened-detailed="editPaneInView"
+               detailed
+               detail-key="id">
         <template slot-scope="props">
+
+          <b-table-column label="項次"
+                          numeric
+                          centered>
+            {{ perPage * (currentPage - 1) + props.row.index }}
+          </b-table-column>
+
+          <b-table-column label="3M 編號">
+            <b-field grouped
+                     group-multiline>
+              <div v-if="props.row.sapId!==props.row.conversionFactorId"
+                   class="control">
+                <b-taglist attached>
+                  <b-tag type="is-success is-small">秀田</b-tag>
+                  <b-tag type="is-danger is-small">{{ props.row.sapId }}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag v-if="props.row.sapId===props.row.conversionFactorId"
+                         type="is-success is-small">秀田</b-tag>
+                  <b-tag type="is-dark is-small">3M</b-tag>
+                  <b-tag type="is-info is-small">{{ props.row.conversionFactorId }}</b-tag>
+                </b-taglist>
+              </div>
+            </b-field>
+          </b-table-column>
 
           <b-table-column label="編號">
             {{ props.row.id }}
@@ -19,55 +47,33 @@
             {{ props.row.name }}
           </b-table-column>
 
-          <b-table-column label="3M編號">
-            <b-field
-              grouped
-              group-multiline
-            >
-              <div
-                v-if="props.row.sapId!==props.row.conversionFactorId"
-                class="control"
-              >
-                <b-taglist attached>
-                  <b-tag type="is-success is-small">秀田</b-tag>
-                  <b-tag type="is-danger is-small">{{ props.row.sapId }}</b-tag>
-                </b-taglist>
-              </div>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag
-                    v-if="props.row.sapId===props.row.conversionFactorId"
-                    type="is-success is-small"
-                  >秀田</b-tag>
-                  <b-tag type="is-dark is-small">3M</b-tag>
-                  <b-tag type="is-info is-small">{{ props.row.conversionFactorId }}</b-tag>
-                </b-taglist>
-              </div>
-            </b-field>
-          </b-table-column>
-
-          <b-table-column
-            label="庫存數"
-            numeric
-          >
+          <b-table-column label="庫存數"
+                          numeric>
             {{ props.row.stockQty }}
           </b-table-column>
 
-          <b-table-column
-            label="單位"
-            centered
-          >
+          <b-table-column label="單位"
+                          centered>
             {{ props.row.unit }}
           </b-table-column>
 
-          <b-table-column
-            label="轉換率"
-            width="80"
-            centered
-          >
+          <b-table-column label="轉換率"
+                          width="80"
+                          centered>
             {{ props.row.conversionFactor }}
           </b-table-column>
         </template>
+
+        <template slot="detail"
+                  slot-scope="props">
+          <product-edit-pane :id="props.row.id"
+                             :conversion-factor-id="props.row.conversionFactorId"
+                             :conversion-factor="props.row.conversionFactor"
+                             @close="closeEditPane($event)"
+                             @edit="editConversionFactor($event)"
+                             @clear="clearConversionFactor($event)" />
+        </template>
+
         <template slot="empty">
           <section class="section">
             <div class="content has-text-grey has-text-centered">
@@ -76,10 +82,20 @@
             </div>
           </section>
         </template>
-        <template
-          slot="footer"
-          v-if="!isEmpty"
-        >
+
+        <template slot="footer"
+                  v-if="!isEmpty">
+          <th/>
+          <th>
+            <div class="th-wrap is-numeric is-centered">
+              項次
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              3M 編號
+            </div>
+          </th>
           <th>
             <div class="th-wrap">
               編號
@@ -88,11 +104,6 @@
           <th>
             <div class="th-wrap">
               品名
-            </div>
-          </th>
-          <th>
-            <div class="th-wrap">
-              3M編號
             </div>
           </th>
           <th>
@@ -119,10 +130,16 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 
+import ProductEditPane from './ProductEditPane'
+
 export default {
   name: 'ProductPage',
-  components: {},
-  data () { return {} },
+  components: { ProductEditPane },
+  data () {
+    return {
+      editPaneInView: [],
+    }
+  },
   computed: {
     ...mapState('products', {
       loading: 'loading',
@@ -132,6 +149,12 @@ export default {
       totalPages: 'totalPages',
       currentPage: 'currentPage',
     }),
+    indexedData: function () {
+      return this.data.map((record, index) => {
+        record.index = index + 1
+        return record
+      })
+    },
     isEmpty: function () { return this.totalRecords === 0 },
   },
   mounted: function () {
@@ -158,16 +181,71 @@ export default {
     this.reset()
   },
   methods: {
-    ...mapActions('products', { fetch: 'fetch' }),
+    ...mapActions('products', {
+      clear: 'clear',
+      fetch: 'fetch',
+      upsert: 'upsert',
+    }),
     ...mapMutations('products', { reset: 'reset' }),
+    closeEditPane (id) {
+      let index = this.editPaneInView.findIndex(idInView => idInView === id)
+      this.editPaneInView.splice(index, 1)
+    },
+    displayDialog (message) {
+      this.$dialog.alert({
+        title: '錯誤',
+        message,
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa',
+      })
+    },
+    clearConversionFactor (productId) {
+      return this.clear(productId)
+        .then(() => {
+          this.$dialog.alert('產品轉換率重置成功')
+          return this
+            .fetch({
+              perPage: this.perPage,
+              currentPage: this.currentPage,
+            })
+            .then(() => Promise.resolve())
+            .catch(error => {
+              console.error(error)
+              return this.displayDialog('產品資料表讀取異常')
+            })
+        })
+        .catch(error => {
+          console.error(error)
+          return this.displayDialog('產品轉換率寫入異常')
+        })
+    },
+    editConversionFactor (payload) {
+      return this.upsert(payload)
+        .then(() => {
+          this.$dialog.alert('產品轉換率寫入成功')
+          return this
+            .fetch({
+              perPage: this.perPage,
+              currentPage: this.currentPage,
+            })
+            .then(() => Promise.resolve())
+            .catch(error => {
+              console.error(error)
+              return this.displayDialog('產品資料表讀取異常')
+            })
+        })
+        .catch(error => {
+          console.error(error)
+          return this.displayDialog('產品轉換率寫入異常')
+        })
+    },
   },
 }
 </script>
 
 <style scoped>
-ul {
-  list-style: none;
-}
 div.content.has-text-grey {
   overflow: hidden;
 }

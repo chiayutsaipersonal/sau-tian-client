@@ -1,9 +1,7 @@
-
 <template>
   <div
-    id="footer-bar"
+    id="pagination-control"
     class="level"
-    :disabled="loading"
   >
     <div class="left-left">
       <div class="level-item" />
@@ -33,7 +31,7 @@
         <button
           class="pagination-last button is-small is-outlined"
           @click="changePage(perPage, totalPages)"
-          :disabled="currentPage===totalPages"
+          :disabled="(currentPage===totalPages) || (totalRecords===0)"
         >
           <span class="icon is-small">
             <i class="fa fa-angle-double-right fa-lg" />
@@ -64,6 +62,10 @@
           @input="changePage($event, 1)"
         >
           <option
+            value="5"
+            :disabled="perPage===5"
+          >5</option>
+          <option
             value="10"
             :disabled="perPage===10"
           >10</option>
@@ -79,15 +81,6 @@
             value="100"
             :disabled="perPage===100"
           >100</option>
-          <option
-            value="250"
-            :disabled="perPage===250"
-          >250</option>
-          <option
-            value="500"
-            :disabled="perPage===500"
-          >500</option>
-          <option value="0">全數</option>
         </b-select>
       </div>
     </div>
@@ -98,7 +91,7 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'FooterBar',
+  name: 'PaginationControl',
   data () {
     return {
       labelLookup: {
@@ -119,9 +112,7 @@ export default {
   },
   methods: {
     changePage (perPage, currentPage) {
-      let paginationQuery = perPage === '0'
-        ? null
-        : { perPage, currentPage }
+      let paginationQuery = { perPage, currentPage }
       return this.$store
         .dispatch(`${this.$route.name}/fetch`, paginationQuery)
         .then(() => Promise.resolve())
@@ -142,8 +133,10 @@ export default {
 </script>
 
 <style scoped>
-#footer-bar {
-  grid-column: 1 / -1;
+#pagination-control {
+  grid-column: 3 / -1;
+  justify-self: end;
+  align-self: end;
 }
 
 .pagination-first {
