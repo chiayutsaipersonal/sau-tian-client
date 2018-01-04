@@ -3,7 +3,7 @@
     <section>
       <b-table :bordered="false"
                :striped="true"
-               :narrowed="false"
+               :narrowed="true"
                :hoverable="true"
                :data="indexedData"
                :loading="loading"
@@ -246,6 +246,10 @@ export default {
 </script>
 
 <style scoped>
+#product-page {
+  padding-right: 10px;
+}
+
 div.content.has-text-grey {
   overflow: hidden;
 }

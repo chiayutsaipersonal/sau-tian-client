@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="app"
-    class="container"
-  >
+  <div id="app">
     <title-bar/>
 
     <navigation-menu/>
@@ -31,35 +28,42 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
+#app::-webkit-scrollbar {
+  width: 0 !important;
+}
+
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  padding: 10px;
-}
-
-.container {
   height: 100%;
+  padding-top: 1%;
   width: 100%;
+  padding-left: 1%;
+  padding-right: 1%;
   display: grid;
   grid-gap: 3px;
+  overflow-y: scroll;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: auto auto 500px;
+  grid-template-rows: auto auto auto;
+  grid-template-areas: "t t t t t t t t t t t t" "n n p p p p p p p p p p"
+    "n n c c c c c c c c c c";
 }
-
 .content::-webkit-scrollbar {
   width: 0 !important;
 }
 
 .content {
-  grid-column: 3 / -1;
-  justify-self: stretch;
-  align-self: start;
-  overflow-y: scroll;
   -ms-overflow-style: none;
   overflow: -moz-scrollbars-none;
+  grid-area: c;
+  height: 70vh;
+  overflow-y: scroll;
+  justify-self: stretch;
+  align-self: start;
 }
 </style>

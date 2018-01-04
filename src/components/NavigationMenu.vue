@@ -1,52 +1,35 @@
 <template>
   <aside id="navigation-menu">
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      @click="switchRoute('/sauTian')"
-      :disabled="this.$route.name==='home'"
-    >
+    <button class="button is-outlined is-fullwidth is-medium"
+            @click="switchRoute('/sauTian')"
+            :disabled="this.$route.name==='home'">
       系統首頁
     </button>
 
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      @click="switchRoute('/sauTian/invoices')"
-      disabled
-    >
+    <button class="button is-outlined is-fullwidth is-medium"
+            @click="switchRoute('/sauTian/invoices')"
+            disabled>
       銷售資料
     </button>
 
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      @click="switchRoute('/sauTian/clients')"
-      disabled
-    >
+    <button class="button is-outlined is-fullwidth is-medium"
+            @click="switchRoute('/sauTian/clients')"
+            :disabled="this.$route.name==='clients'">
       客戶列表
     </button>
 
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      @click="switchRoute('/sauTian/products')"
-      :disabled="this.$route.name==='products'"
-    >
+    <button class="button is-outlined is-fullwidth is-medium"
+            @click="switchRoute('/sauTian/products')"
+            :disabled="this.$route.name==='products'">
       產品列表
     </button>
 
     <br>
 
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      :disabled="!routeDataReady"
-      @click="reloadRouteData"
-    >
+    <button class="button is-outlined is-fullwidth is-medium"
+            :disabled="!routeDataReady"
+            @click="reloadRouteData">
       重新載入
-    </button>
-
-    <button
-      class="button is-outlined is-fullwidth is-medium"
-      disabled
-    >
-      輸出報告
     </button>
   </aside>
 </template>
@@ -98,11 +81,10 @@ export default {
 
 <style scoped>
 #navigation-menu {
-  grid-column: 1 / 3;
-  grid-row: 2 / -1;
-  justify-self: start;
-  align-self: stretch;
-  padding: 0;
+  grid-area: n;
+  justify-self: center;
+  align-self: start;
+  padding: 20px;
 }
 
 button {

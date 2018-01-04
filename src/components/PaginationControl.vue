@@ -1,86 +1,62 @@
 <template>
-  <div
-    id="pagination-control"
-    class="level"
-  >
+  <div id="pagination-control"
+       class="level">
     <div class="left-left">
       <div class="level-item" />
     </div>
     <div class="level-right">
       <div class="level-item">
-        <button
-          class="pagination-first button is-small is-outlined"
-          @click="changePage(perPage, 1)"
-          :disabled="currentPage===1||currentPage===null"
-        >
+        <button class="pagination-first button is-small is-outlined"
+                @click="changePage(perPage, 1)"
+                :disabled="currentPage===1||currentPage===null">
           <span class="icon is-small">
             <i class="fa fa-angle-double-left fa-lg" />
           </span>
         </button>
         <section>
-          <b-pagination
-            :total="totalRecords"
-            :per-page="perPage"
-            :current="currentPage"
-            :order="'is-centered'"
-            :size="'is-small'"
-            :simple="false"
-            @update:current="changePage(perPage, $event)"
-          />
+          <b-pagination :total="totalRecords"
+                        :per-page="perPage"
+                        :current="currentPage"
+                        :order="'is-centered'"
+                        :size="'is-small'"
+                        :simple="false"
+                        @update:current="changePage(perPage, $event)" />
         </section>
-        <button
-          class="pagination-last button is-small is-outlined"
-          @click="changePage(perPage, totalPages)"
-          :disabled="(currentPage===totalPages) || (totalRecords===0)"
-        >
+        <button class="pagination-last button is-small is-outlined"
+                @click="changePage(perPage, totalPages)"
+                :disabled="(currentPage===totalPages) || (totalRecords===0)">
           <span class="icon is-small">
             <i class="fa fa-angle-double-right fa-lg" />
           </span>
         </button>
       </div>
       <div class="level-item">
-        <b-select
-          :placeholder="currentPage.toString()"
-          size="is-small"
-          :disabled="totalPages===1"
-          @input="changePage(perPage, $event)"
-        >
-          <option
-            v-for="pageNumber in totalPages"
-            :value="pageNumber"
-            :disabled="pageNumber===currentPage"
-            :key="pageNumber"
-          >
-            {{ pageNumber }}
+        <b-select :placeholder="`第 ${currentPage.toString()} 頁`"
+                  size="is-small"
+                  :disabled="totalPages===1"
+                  @input="changePage(perPage, $event)">
+          <option v-for="pageNumber in totalPages"
+                  :value="pageNumber"
+                  :disabled="pageNumber===currentPage"
+                  :key="pageNumber">
+            第 {{ pageNumber }} 頁
           </option>
         </b-select>
       </div>
       <div class="level-item">
-        <b-select
-          :placeholder="perPage.toString()"
-          size="is-small"
-          @input="changePage($event, 1)"
-        >
-          <option
-            value="5"
-            :disabled="perPage===5"
-          >5</option>
-          <option
-            value="10"
-            :disabled="perPage===10"
-          >10</option>
-          <option
-            value="25"
-            :disabled="perPage===25"
-          >25</option>
-          <option
-            value="50"
-            :disabled="perPage===50"
-          >50</option>
-          <option
-            value="100"
-            :disabled="perPage===100"
-          >100</option>
+        <b-select :placeholder="`顯示 ${perPage.toString()} 筆資料`"
+                  size="is-small"
+                  @input="changePage($event, 1)">
+          <option value="5"
+                  :disabled="perPage===5">顯示 5 筆資料</option>
+          <option value="10"
+                  :disabled="perPage===10">顯示 10 筆資料</option>
+          <option value="25"
+                  :disabled="perPage===25">顯示 25 筆資料</option>
+          <option value="50"
+                  :disabled="perPage===50">顯示 50 筆資料</option>
+          <option value="100"
+                  :disabled="perPage===100">顯示 100 筆資料</option>
         </b-select>
       </div>
     </div>
@@ -134,9 +110,8 @@ export default {
 
 <style scoped>
 #pagination-control {
-  grid-column: 3 / -1;
-  justify-self: end;
-  align-self: end;
+  grid-area: p;
+  justify-self: center;
 }
 
 .pagination-first {

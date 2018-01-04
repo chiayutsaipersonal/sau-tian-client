@@ -1,5 +1,7 @@
 <template>
-  <div id="client-page"> CLIENTS </div>
+  <div id="client-page">
+    CLIENTS
+  </div>
 </template>
 
 <script>
