@@ -67,6 +67,7 @@
         <template slot="detail"
                   slot-scope="props">
           <product-edit-pane :id="props.row.id"
+                             :name="props.row.name"
                              :conversion-factor-id="props.row.conversionFactorId"
                              :conversion-factor="props.row.conversionFactor"
                              @close="closeEditPane($event)"

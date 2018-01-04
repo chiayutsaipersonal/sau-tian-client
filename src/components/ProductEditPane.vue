@@ -17,7 +17,7 @@
         <p class="control">
           <button class="button is-info"
                   :disabled="isPrestine || hasEmptyValue"
-                  @click="$emit('edit', { id: id, conversionFactorId: convFactorId, conversionFactor: convFactor})">
+                  @click="confirmEdit">
             更新
           </button>
         </p>
@@ -26,7 +26,7 @@
         <p class="control">
           <button class="button is-success"
                   :disabled="!conversionFactorId"
-                  @click="$emit('clear', id)">
+                  @click="confirmClear">
             重置
           </button>
         </p>
@@ -64,6 +64,10 @@ export default {
     id: {
       type: String,
       default: null,
+    },
+    name: {
+      type: String,
+      default: '空白品名',
     },
     conversionFactorId: {
       type: String,
@@ -122,6 +126,22 @@ export default {
   },
   methods: {
     ...mapActions('products', { check: 'check' }),
+    confirmEdit () {
+      this.$dialog.confirm({
+        message: `確認 "編修" 產品 【${this.id}】 ${this.name || '空白品名'} 轉換率資料？`,
+        onConfirm: () => this.$emit('edit', {
+          id: this.id,
+          conversionFactorId: this.convFactorId,
+          conversionFactor: this.convFactor,
+        }),
+      })
+    },
+    confirmClear () {
+      this.$dialog.confirm({
+        message: `確認 "重置" 產品 【${this.id}】 ${this.name || '空白品名'} 轉換率資料?`,
+        onConfirm: () => this.$emit('clear', this.id),
+      })
+    },
   },
 }
 </script>
