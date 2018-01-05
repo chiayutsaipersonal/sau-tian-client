@@ -31,7 +31,8 @@
         </button>
       </div>
       <div class="level-item">
-        <b-select :placeholder="`第 ${currentPage.toString()} 頁`"
+        <b-select v-model="localCurrentPage"
+                  :placeholder="`第 ${currentPage.toString()} 頁`"
                   size="is-small"
                   :disabled="totalPages===1"
                   @input="changePage(perPage, $event)">
@@ -44,19 +45,30 @@
         </b-select>
       </div>
       <div class="level-item">
-        <b-select :placeholder="`顯示 ${perPage.toString()} 筆資料`"
+        <b-select v-model="localPerPage"
+                  :placeholder="`顯示 ${perPage.toString()} 筆資料`"
                   size="is-small"
                   @input="changePage($event, 1)">
           <option value="5"
-                  :disabled="perPage===5">顯示 5 筆資料</option>
+                  :disabled="perPage===5">
+            顯示 5 筆資料
+          </option>
           <option value="10"
-                  :disabled="perPage===10">顯示 10 筆資料</option>
+                  :disabled="perPage===10">
+            顯示 10 筆資料
+          </option>
           <option value="25"
-                  :disabled="perPage===25">顯示 25 筆資料</option>
+                  :disabled="perPage===25">
+            顯示 25 筆資料
+          </option>
           <option value="50"
-                  :disabled="perPage===50">顯示 50 筆資料</option>
+                  :disabled="perPage===50">
+            顯示 50 筆資料
+          </option>
           <option value="100"
-                  :disabled="perPage===100">顯示 100 筆資料</option>
+                  :disabled="perPage===100">
+            顯示 100 筆資料
+          </option>
         </b-select>
       </div>
     </div>
@@ -64,27 +76,28 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
   name: 'PaginationControl',
   data () {
     return {
-      labelLookup: {
-        products: '產品',
-        clients: '客戶',
-        invoices: '銷售',
-      },
+      localCurrentPage: null,
+      localPerPage: null,
     }
   },
   computed: {
-    ...mapState('products', {
-      loading: 'loading',
-      totalRecords: 'totalRecords',
-      perPage: 'perPage',
-      totalPages: 'totalPages',
-      currentPage: 'currentPage',
-    }),
+    loading () { return this.$store.state[this.$route.name].loading },
+    totalRecords () { return this.$store.state[this.$route.name].totalRecords },
+    perPage () { return this.$store.state[this.$route.name].perPage },
+    totalPages () { return this.$store.state[this.$route.name].totalPages },
+    currentPage () { return this.$store.state[this.$route.name].currentPage },
+  },
+  watch: {
+    currentPage (currentPage) {
+      this.localCurrentPage = currentPage
+    },
+    perPage (perPage) {
+      this.localPerPage = perPage
+    },
   },
   methods: {
     changePage (perPage, currentPage) {
@@ -96,13 +109,25 @@ export default {
           console.error(error)
           return this.$dialog.alert({
             title: '錯誤',
-            message: `${this.labelLookup[this.$route.name]}資料表讀取異常`,
+            message: `${this.viewLabel()}資料表讀取異常`,
             type: 'is-danger',
             hasIcon: true,
             icon: 'times-circle',
             iconPack: 'fa',
           })
         })
+    },
+    viewLabel () {
+      switch (this.$route.name) {
+        case 'products':
+          return '產品'
+        case 'clients':
+          return '客戶'
+        case 'invoices':
+          return '銷售'
+        default:
+          return '錯誤'
+      }
     },
   },
 }
@@ -111,7 +136,7 @@ export default {
 <style scoped>
 #pagination-control {
   grid-area: p;
-  justify-self: center;
+  justify-self: end;
 }
 
 .pagination-first {
