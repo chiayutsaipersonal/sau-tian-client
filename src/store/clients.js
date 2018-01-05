@@ -1,4 +1,4 @@
-// import axios from 'axios'
+import axios from 'axios'
 
 const clients = {
   namespaced: true,
@@ -17,27 +17,27 @@ const clients = {
     //     .catch(error => Promise.reject(error))
     // },
     // ///////////////////////////////////////////////////
-    // fetch: (context, payload) => {
-    //   if (context.state.loading || context.state.updating) {
-    //     return Promise.resolve()
-    //   }
-    //   context.commit('clearData')
-    //   let url = '/sauTian/api/products'
-    //   if (payload) url += `?per_page=${payload.perPage}&page=${payload.currentPage}`
-    //   context.commit('setLoadingState', true)
-    //   return axios({
-    //     method: 'get',
-    //     url,
-    //   }).then(result => {
-    //     context.commit('register', result.data)
-    //     context.commit('setLoadingState', false)
-    //     return Promise.resolve()
-    //   }).catch(error => {
-    //     context.commit('reset')
-    //     context.commit('setLoadingState', false)
-    //     return Promise.reject(error)
-    //   })
-    // },
+    fetch: (context, payload) => {
+      if (context.state.loading || context.state.updating) {
+        return Promise.resolve()
+      }
+      context.commit('clearData')
+      let url = '/sauTian/api/clients'
+      if (payload) url += `?per_page=${payload.perPage}&page=${payload.currentPage}`
+      context.commit('setLoadingState', true)
+      return axios({
+        method: 'get',
+        url,
+      }).then(result => {
+        context.commit('register', result.data)
+        context.commit('setLoadingState', false)
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('reset')
+        context.commit('setLoadingState', false)
+        return Promise.reject(error)
+      })
+    },
     // ///////////////////////////////////////////////////
     // upsert: (context, payload) => {
     //   if (context.state.loading || context.state.updating) {
@@ -88,7 +88,7 @@ const clients = {
       state.loading = false
       state.data = []
       state.totalRecords = 0
-      state.perPage = 8
+      state.perPage = 10
       state.totalPages = 0
       state.currentPage = 1
       state.first = null
@@ -115,7 +115,7 @@ const clients = {
     updating: false,
     data: [],
     totalRecords: 0,
-    perPage: 8,
+    perPage: 10,
     totalPages: 0,
     currentPage: 1,
     first: null,
