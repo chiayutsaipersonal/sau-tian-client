@@ -116,7 +116,7 @@ export default {
       if (convFactor === '') {
         this.convFactor = null
       } else {
-        this.convFactor = convFactor.toFloat()
+        if (this.convFactor !== null) this.convFactor = parseFloat(this.convFactor)
       }
     },
   },
