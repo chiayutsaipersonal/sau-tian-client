@@ -5,14 +5,16 @@
                :striped="true"
                :narrowed="true"
                :hoverable="true"
-               :data="indexedData"
+               :mobile-cards="false"
                :loading="loading"
+               :data="indexedData"
                :opened-detailed="editPaneInView"
                detailed
                detail-key="id">
-        <template slot-scope="props">
 
+        <template slot-scope="props">
           <b-table-column label="項次"
+                          width="60"
                           numeric
                           centered>
             {{ perPage * (currentPage - 1) + props.row.index }}
@@ -88,39 +90,25 @@
                   v-if="!isEmpty">
           <th/>
           <th>
-            <div class="th-wrap is-numeric is-centered">
-              項次
-            </div>
+            <div class="th-wrap is-numeric is-centered"> 項次 </div>
           </th>
           <th>
-            <div class="th-wrap">
-              3M 編號
-            </div>
+            <div class="th-wrap"> 3M 編號 </div>
           </th>
           <th>
-            <div class="th-wrap">
-              編號
-            </div>
+            <div class="th-wrap"> 編號 </div>
           </th>
           <th>
-            <div class="th-wrap">
-              品名
-            </div>
+            <div class="th-wrap"> 品名 </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric">
-              庫存數
-            </div>
+            <div class="th-wrap is-numeric"> 庫存數 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              單位
-            </div>
+            <div class="th-wrap is-centered"> 單位 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              轉換率
-            </div>
+            <div class="th-wrap is-centered"> 轉換率 </div>
           </th>
         </template>
       </b-table>
@@ -192,7 +180,7 @@ export default {
       let index = this.editPaneInView.findIndex(idInView => idInView === id)
       this.editPaneInView.splice(index, 1)
     },
-    displayDialog (message) {
+    displayErrorDialog (message) {
       this.$dialog.alert({
         title: '錯誤',
         message,
@@ -214,12 +202,12 @@ export default {
             .then(() => Promise.resolve())
             .catch(error => {
               console.error(error)
-              return this.displayDialog('產品資料表讀取異常')
+              return this.displayErrorDialog('產品資料表讀取異常')
             })
         })
         .catch(error => {
           console.error(error)
-          return this.displayDialog('產品轉換率寫入異常')
+          return this.displayErrorDialog('產品轉換率寫入異常')
         })
     },
     editConversionFactor (payload) {
@@ -234,12 +222,12 @@ export default {
             .then(() => Promise.resolve())
             .catch(error => {
               console.error(error)
-              return this.displayDialog('產品資料表讀取異常')
+              return this.displayErrorDialog('產品資料表讀取異常')
             })
         })
         .catch(error => {
           console.error(error)
-          return this.displayDialog('產品轉換率寫入異常')
+          return this.displayErrorDialog('產品轉換率寫入異常')
         })
     },
   },

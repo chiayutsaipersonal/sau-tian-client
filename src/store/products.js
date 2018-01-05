@@ -85,7 +85,7 @@ const products = {
       state.loading = false
       state.data = []
       state.totalRecords = 0
-      state.perPage = 5
+      state.perPage = 10
       state.totalPages = 0
       state.currentPage = 1
       state.first = null
@@ -112,7 +112,7 @@ const products = {
     updating: false,
     data: [],
     totalRecords: 0,
-    perPage: 5,
+    perPage: 10,
     totalPages: 0,
     currentPage: 1,
     first: null,
