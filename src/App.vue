@@ -4,7 +4,7 @@
 
     <navigation-menu/>
 
-    <pagination-control v-if="activateFootbar" />
+    <pagination-control v-if="activatePaginationControl" />
 
     <div class="content">
       <router-view/>
@@ -21,8 +21,8 @@ export default {
   name: 'App',
   components: { TitleBar, NavigationMenu, PaginationControl },
   computed: {
-    activateFootbar: function () {
-      return this.$route.name === 'products'
+    activatePaginationControl: function () {
+      return ((this.$route.name === 'products') || (this.$route.name === 'clients'))
     },
   },
 }
