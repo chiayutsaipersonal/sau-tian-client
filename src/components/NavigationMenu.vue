@@ -35,17 +35,12 @@
 </template>
 
 <script>
+import displayErrorDialog from '../mixins/displayErrorDialog'
+import routeLabel from '../mixins/routeLabel'
+
 export default {
   name: 'NavigationBar',
-  data () {
-    return {
-      labelLookup: {
-        products: '產品',
-        clients: '客戶',
-        invoices: '銷售',
-      },
-    }
-  },
+  mixins: [displayErrorDialog, routeLabel],
   computed: {
     routeDataReady: function () {
       if (this.$route.name === 'home') return false
@@ -62,14 +57,7 @@ export default {
         .then(() => Promise.resolve())
         .catch(error => {
           console.error(error)
-          return this.$dialog.alert({
-            title: '錯誤',
-            message: `${this.labelLookup[this.$route.name]}資料表讀取異常`,
-            type: 'is-danger',
-            hasIcon: true,
-            icon: 'times-circle',
-            iconPack: 'fa',
-          })
+          return this.displayErrorDialog(`${this.routeLabel()}資料表讀取異常`)
         })
     },
     switchRoute: function (path) {

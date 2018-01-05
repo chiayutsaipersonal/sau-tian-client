@@ -121,9 +121,12 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 
 import ProductEditPane from './ProductEditPane'
 
+import displayErrorDialog from '../mixins/displayErrorDialog'
+
 export default {
   name: 'ProductPage',
   components: { ProductEditPane },
+  mixins: [displayErrorDialog],
   data () {
     return {
       editPaneInView: [],
@@ -179,16 +182,6 @@ export default {
     closeEditPane (id) {
       let index = this.editPaneInView.findIndex(idInView => idInView === id)
       this.editPaneInView.splice(index, 1)
-    },
-    displayErrorDialog (message) {
-      this.$dialog.alert({
-        title: '錯誤',
-        message,
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa',
-      })
     },
     clearConversionFactor (productId) {
       return this.clear(productId)

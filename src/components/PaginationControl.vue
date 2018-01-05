@@ -76,8 +76,12 @@
 </template>
 
 <script>
+import displayErrorDialog from '../mixins/displayErrorDialog'
+import routeLabel from '../mixins/routeLabel'
+
 export default {
   name: 'PaginationControl',
+  mixins: [displayErrorDialog, routeLabel],
   data () {
     return {
       localCurrentPage: null,
@@ -107,27 +111,8 @@ export default {
         .then(() => Promise.resolve())
         .catch(error => {
           console.error(error)
-          return this.$dialog.alert({
-            title: '錯誤',
-            message: `${this.viewLabel()}資料表讀取異常`,
-            type: 'is-danger',
-            hasIcon: true,
-            icon: 'times-circle',
-            iconPack: 'fa',
-          })
+          return this.displayErrorDialog(`${this.routeLabel()}資料表讀取異常`)
         })
-    },
-    viewLabel () {
-      switch (this.$route.name) {
-        case 'products':
-          return '產品'
-        case 'clients':
-          return '客戶'
-        case 'invoices':
-          return '銷售'
-        default:
-          return '錯誤'
-      }
     },
   },
 }

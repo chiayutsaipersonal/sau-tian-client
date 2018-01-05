@@ -137,8 +137,11 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 
+import displayErrorDialog from '../mixins/displayErrorDialog'
+
 export default {
   name: 'ClientPage',
+  mixins: [displayErrorDialog],
   computed: {
     ...mapState('clients', {
       loading: 'loading',
@@ -175,16 +178,6 @@ export default {
   methods: {
     ...mapActions('clients', { fetch: 'fetch' }),
     ...mapMutations('clients', { reset: 'reset' }),
-    displayErrorDialog (message) {
-      this.$dialog.alert({
-        title: '錯誤',
-        message,
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa',
-      })
-    },
   },
 }
 </script>
