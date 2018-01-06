@@ -3,7 +3,7 @@
        class="level">
     <div class="level-left">
       <div class="level-item">
-        <h1 class="title is-4">秀田銷售資料拋轉程式</h1>
+        <h3 class="title is-3">秀田銷售資料拋轉程式</h3>
       </div>
     </div>
     <div class="level-right">

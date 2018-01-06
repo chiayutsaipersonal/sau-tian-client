@@ -1,26 +1,26 @@
 <template>
   <aside id="navigation-menu">
-    <button class="button is-outlined is-fullwidth is-medium"
-            @click="switchRoute('/sauTian')"
-            :disabled="this.$route.name==='home'">
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            :class="{'is-active':$route.name==='home'}"
+            @click="switchRoute('/sauTian')">
       系統首頁
     </button>
 
-    <button class="button is-outlined is-fullwidth is-medium"
-            @click="switchRoute('/sauTian/invoices')"
-            disabled>
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            :class="{'is-active':$route.name==='invoices'}"
+            @click="switchRoute('/sauTian/invoices')">
       銷售資料
     </button>
 
-    <button class="button is-outlined is-fullwidth is-medium"
-            @click="switchRoute('/sauTian/clients')"
-            :disabled="this.$route.name==='clients'">
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            :class="{'is-active':$route.name==='clients'}"
+            @click="switchRoute('/sauTian/clients')">
       客戶列表
     </button>
 
-    <button class="button is-outlined is-fullwidth is-medium"
-            @click="switchRoute('/sauTian/products')"
-            :disabled="this.$route.name==='products'">
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            :class="{'is-active':$route.name==='products'}"
+            @click="switchRoute('/sauTian/products')">
       產品列表
     </button>
 
@@ -61,7 +61,7 @@ export default {
         })
     },
     switchRoute: function (path) {
-      this.$router.push(path)
+      if (this.$route.path !== path) this.$router.push(path)
     },
   },
 }
@@ -76,8 +76,8 @@ export default {
 }
 
 button {
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
