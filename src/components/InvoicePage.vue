@@ -12,53 +12,59 @@
 
           <b-table-column label="項次"
                           width="60"
-                          numeric
                           centered>
             {{ perPage * (currentPage - 1) + props.row.index }}
           </b-table-column>
 
-          <b-table-column label="編號"
-                          width="80">
-            {{ props.row.id }}
+          <b-table-column label="銷售日期"
+                          centered
+                          width="100">
+            {{ props.row.date }}
           </b-table-column>
 
           <b-table-column label="區域"
                           width="60"
-                          numeric
                           centered>
             {{ props.row.areaId }}
           </b-table-column>
 
           <b-table-column label="公司名稱">
-            {{ props.row.name }}
+            {{ props.row.companyName }}
           </b-table-column>
 
           <b-table-column label="聯絡人">
             {{ props.row.contact }}
           </b-table-column>
 
-          <b-table-column label="電話">
-            {{ props.row.telephone }}
+          <b-table-column label="品名">
+            {{ props.row.productName }}
           </b-table-column>
 
-          <b-table-column label="傳真">
-            {{ props.row.fax }}
+          <b-table-column label="售價"
+                          numeric>
+            {{ props.row.price|currency }}
           </b-table-column>
 
-          <b-table-column label="地址">
-            {{ props.row.address }}
+          <b-table-column label="數量"
+                          numeric>
+            {{ props.row.quantity|quantity }}
           </b-table-column>
 
-          <b-table-column label="郵遞區號">
-            {{ props.row.zipCode }}
+          <b-table-column label="單位"
+                          centered
+                          width="60">
+            {{ props.row.unit }}
           </b-table-column>
 
-          <b-table-column label="統編">
-            {{ props.row.registrationId }}
+          <b-table-column label="總額"
+                          numeric>
+            {{ (props.row.price*props.row.quantity)|currency }}
           </b-table-column>
 
-          <b-table-column label="種類">
-            {{ props.row.type }}
+          <b-table-column label="業務"
+                          centered
+                          width="80">
+            {{ props.row.employeeId }}
           </b-table-column>
         </template>
 
@@ -74,17 +80,17 @@
         <template slot="footer"
                   v-if="!isEmpty">
           <th>
-            <div class="th-wrap is-numeric is-centered">
+            <div class="th-wrap is-centered">
               項次
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              編號
+            <div class="th-wrap is-centered">
+              銷售日期
             </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric is-centered">
+            <div class="th-wrap is-centered">
               區域
             </div>
           </th>
@@ -100,32 +106,32 @@
           </th>
           <th>
             <div class="th-wrap">
-              電話
+              品名
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              傳真
+            <div class="th-wrap is-numeric">
+              售價
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              地址
+            <div class="th-wrap is-numeric">
+              數量
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              郵遞區號
+            <div class="th-wrap is-centered">
+              單位
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              統編
+            <div class="th-wrap is-numeric">
+              總額
             </div>
           </th>
           <th>
-            <div class="th-wrap">
-              種類
+            <div class="th-wrap is-centered">
+              業務
             </div>
           </th>
         </template>
@@ -135,12 +141,23 @@
 </template>
 
 <script>
+import numeral from 'numeral'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
 export default {
   name: 'InvoicePage',
+  filters: {
+    currency (value) {
+      if (value === null) return null
+      return numeral(value).format('$ 0,0[.]00')
+    },
+    quantity (value) {
+      if (value === null) return null
+      return numeral(value).format('0,0[.]00')
+    },
+  },
   mixins: [displayErrorDialog],
   computed: {
     ...mapGetters({
