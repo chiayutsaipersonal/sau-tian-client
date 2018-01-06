@@ -22,7 +22,7 @@ export default {
   components: { TitleBar, NavigationMenu, PaginationControl },
   computed: {
     activatePaginationControl: function () {
-      return ((this.$route.name === 'products') || (this.$route.name === 'clients'))
+      return this.$route.name !== 'home'
     },
   },
 }

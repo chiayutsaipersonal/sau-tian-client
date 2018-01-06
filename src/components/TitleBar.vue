@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import moment from 'moment-timezone'
+
 export default {
   name: 'TitleBar',
   data () {
@@ -43,6 +45,24 @@ export default {
       endDate: null,
       monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
     }
+  },
+  watch: {
+    startDate () {
+      this.$store.commit(
+        'setStartDate',
+        this.startDate
+          ? moment(new Date(this.startDate)).format('YYYY-MM-DD')
+          : null
+      )
+    },
+    endDate () {
+      this.$store.commit(
+        'setEndDate',
+        this.endDate
+          ? moment(new Date(this.endDate)).format('YYYY-MM-DD')
+          : null
+      )
+    },
   },
 }
 </script>
