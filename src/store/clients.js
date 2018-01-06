@@ -3,20 +3,6 @@ import axios from 'axios'
 const clients = {
   namespaced: true,
   actions: {
-    // clear: (context, productId) => {
-    //   let url = `/sauTian/api/products/${productId}`
-    //   return axios({ method: 'delete', url })
-    //     .then(() => Promise.resolve())
-    //     .catch(error => Promise.reject(error))
-    // },
-    // ///////////////////////////////////////////////////
-    // check: (context, payload) => {
-    //   let url = `/sauTian/api/products/${payload.id}/conversionFactors/${payload.conversionFactorId}`
-    //   return axios({ method: 'get', url })
-    //     .then(result => Promise.resolve(result.data.data))
-    //     .catch(error => Promise.reject(error))
-    // },
-    // ///////////////////////////////////////////////////
     fetch: (context, payload) => {
       if (context.state.loading || context.state.updating) {
         return Promise.resolve()
@@ -38,23 +24,6 @@ const clients = {
         return Promise.reject(error)
       })
     },
-    // ///////////////////////////////////////////////////
-    // upsert: (context, payload) => {
-    //   if (context.state.loading || context.state.updating) {
-    //     return Promise.resolve()
-    //   }
-    //   return axios({
-    //     method: 'post',
-    //     url: '/sauTian/api/products',
-    //     data: {
-    //       productId: payload.id,
-    //       conversionFactorId: payload.conversionFactorId,
-    //       conversionFactor: payload.conversionFactor,
-    //     },
-    //   }).then(() => {
-    //     return Promise.resolve()
-    //   }).catch(error => Promise.reject(error))
-    // },
   },
   mutations: {
     clearData: state => {
@@ -100,11 +69,6 @@ const clients = {
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
     },
-    // updateRecord: (state, payload) => {
-    //   let index = state.data.findIndex(dataEntry => dataEntry.id === payload.id)
-    //   state.data[index].conversionFactorId = payload.conversionFactorId
-    //   state.data[index].conversionFactor = payload.conversionFactor
-    // },
   },
   getters: {
     isLoading: state => state.loading,
