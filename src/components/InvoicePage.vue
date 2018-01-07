@@ -71,7 +71,8 @@
         <template slot="empty">
           <section class="section">
             <div class="content has-text-grey has-text-centered">
-              <p v-if="loading">系統正在讀取銷售資料</p>
+              <p v-if="!isValidDateRange">銷售資料查詢時間區間尚未設定</p>
+              <p v-else-if="loading">系統正在讀取銷售資料</p>
               <p v-else>未發現可顯示銷售資料</p>
             </div>
           </section>
