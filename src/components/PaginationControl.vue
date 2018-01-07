@@ -2,14 +2,30 @@
   <div id="pagination-control"
        class="level">
     <div class="left-left">
-      <div class="level-item" />
-    </div>
-    <div class="level-right">
       <div class="level-item">
-        <button class="pagination-first button is-small is-outlined"
+        <b-select v-model="localProductFilter"
+                  size="is-medium"
+                  placeholder="顯示所有產品"
+                  :disabled="$route.name!=='invoices'"
+                  @input="setProductFilter($event)">
+          <option :value="null">顯示所有產品</option>
+          <option v-for="productId in uniqueProducts"
+                  :value="productId"
+                  :key="productId">
+            僅顯示 {{ productId }}
+          </option>
+        </b-select>
+      </div>
+    </div>
+    <div v-if="$route.name==='invoices'"
+         class="level-right" />
+    <div v-else
+         class="level-right">
+      <div class="level-item">
+        <button class="pagination-first button is-medium is-outlined"
                 @click="changePage(perPage, 1)"
                 :disabled="currentPage===1||currentPage===null">
-          <span class="icon is-small">
+          <span class="icon is-medium">
             <i class="fa fa-angle-double-left fa-lg" />
           </span>
         </button>
@@ -18,14 +34,14 @@
                         :per-page="perPage"
                         :current="currentPage"
                         :order="'is-centered'"
-                        :size="'is-small'"
+                        :size="'is-medium'"
                         :simple="false"
                         @update:current="changePage(perPage, $event)" />
         </section>
-        <button class="pagination-last button is-small is-outlined"
+        <button class="pagination-last button is-medium is-outlined"
                 @click="changePage(perPage, totalPages)"
                 :disabled="(currentPage===totalPages) || (totalRecords===0)">
-          <span class="icon is-small">
+          <span class="icon is-medium">
             <i class="fa fa-angle-double-right fa-lg" />
           </span>
         </button>
@@ -33,7 +49,7 @@
       <div class="level-item">
         <b-select v-model="localCurrentPage"
                   :placeholder="`第 ${currentPage.toString()} 頁`"
-                  size="is-small"
+                  size="is-medium"
                   :disabled="totalPages===1"
                   @input="changePage(perPage, $event)">
           <option v-for="pageNumber in totalPages"
@@ -46,8 +62,9 @@
       </div>
       <div class="level-item">
         <b-select v-model="localPerPage"
+                  size="is-medium"
                   :placeholder="`顯示 ${perPage.toString()} 筆資料`"
-                  size="is-small"
+                  :disabled="$route.name==='invoices'"
                   @input="changePage($event, 1)">
           <option value="5"
                   :disabled="perPage===5">
@@ -76,6 +93,8 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations, mapState } from 'vuex'
+
 import displayErrorDialog from '../mixins/displayErrorDialog'
 import routeLabel from '../mixins/routeLabel'
 
@@ -86,9 +105,12 @@ export default {
     return {
       localCurrentPage: null,
       localPerPage: null,
+      localProductFilter: null,
     }
   },
   computed: {
+    ...mapGetters('invoices', { uniqueProducts: 'uniqueProducts' }),
+    ...mapState('invoices', { productFilter: 'productFilter' }),
     loading () { return this.$store.state[this.$route.name].loading },
     totalRecords () { return this.$store.state[this.$route.name].totalRecords },
     perPage () { return this.$store.state[this.$route.name].perPage },
@@ -96,6 +118,9 @@ export default {
     currentPage () { return this.$store.state[this.$route.name].currentPage },
   },
   watch: {
+    productFilter (productFilter) {
+      this.localProductFilter = productFilter
+    },
     currentPage (currentPage) {
       this.localCurrentPage = currentPage
     },
@@ -104,6 +129,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
     changePage (perPage, currentPage) {
       let paginationQuery = { perPage, currentPage }
       return this.$store
@@ -121,6 +147,13 @@ export default {
 <style scoped>
 #pagination-control {
   grid-area: p;
+}
+
+.level-left {
+  justify-self: start;
+}
+
+.level-right {
   justify-self: end;
 }
 

@@ -66,14 +66,21 @@ const invoices = {
       state.self = null
       state.next = null
       state.last = null
+      state.productFilter = null
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
+    },
+    setProductFilter: (state, filterProductId) => {
+      state.productFilter = filterProductId
     },
   },
   getters: {
     isLoading: state => state.loading,
     isUpdating: state => state.updating,
+    uniqueProducts: state => {
+      return [...new Set(state.data.map(item => item.productId))]
+    },
   },
   state: {
     loading: false,
@@ -88,6 +95,7 @@ const invoices = {
     self: null,
     next: null,
     last: null,
+    productFilter: null,
   },
 }
 

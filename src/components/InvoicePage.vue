@@ -32,10 +32,6 @@
             {{ props.row.companyName }}
           </b-table-column>
 
-          <b-table-column label="聯絡人">
-            {{ props.row.contact }}
-          </b-table-column>
-
           <b-table-column label="品名">
             {{ props.row.productName }}
           </b-table-column>
@@ -102,11 +98,6 @@
           </th>
           <th>
             <div class="th-wrap">
-              聯絡人
-            </div>
-          </th>
-          <th>
-            <div class="th-wrap">
               品名
             </div>
           </th>
@@ -143,7 +134,7 @@
 
 <script>
 import numeral from 'numeral'
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
@@ -172,6 +163,7 @@ export default {
       perPage: 'perPage',
       totalPages: 'totalPages',
       currentPage: 'currentPage',
+      productFilter: 'productFilter',
     }),
     ...mapState({
       startDate: 'startDate',
@@ -181,6 +173,10 @@ export default {
       return this.data.map((record, index) => {
         record.index = index + 1
         return record
+      }).filter(record => {
+        return this.productFilter
+          ? record.productId === this.productFilter
+          : true
       })
     },
     isEmpty () { return this.totalRecords === 0 },
@@ -196,17 +192,25 @@ export default {
     }
   },
   beforeDestroy: function () {
-    this.reset()
+    this.$store.commit('clients/reset')
+    this.$store.commit('invoices/reset')
   },
   methods: {
-    ...mapActions('invoices', { fetch: 'fetch' }),
-    ...mapMutations('invoices', { reset: 'reset' }),
     getLiveData () {
-      return this
-        .fetch()
+      this.$store.commit('invoices/setProductFilter', null)
+      return this.$store
+        .dispatch('clients/fetch')
         .catch(error => {
           console.error(error)
-          return this.displayErrorDialog('銷售資料表讀取異常')
+          return this.displayErrorDialog('客戶資料表讀取異常')
+        })
+        .then(() => {
+          return this.$store
+            .dispatch('invoices/fetch')
+            .catch(error => {
+              console.error(error)
+              return this.displayErrorDialog('銷售資料表讀取異常')
+            })
         })
     },
     avoidLengthQuery () {
