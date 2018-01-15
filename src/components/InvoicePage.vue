@@ -2,12 +2,15 @@
   <div id="invoice-page">
     <section>
       <b-table :bordered="false"
-               :striped="true"
                :narrowed="true"
                :hoverable="true"
                :mobile-cards="false"
                :loading="loading"
-               :data="indexedData">
+               :data="indexedData"
+               :checked-rows.sync="localPreservedDataEntries"
+               checkable
+               :row-class="markUnpreservedRecord"
+               @check="processPreservationUpdate">
         <template slot-scope="props">
 
           <b-table-column label="項次"
@@ -32,13 +35,38 @@
             {{ props.row.companyName }}
           </b-table-column>
 
+          <b-table-column label="3M 編號">
+            <b-field grouped
+                     group-multiline>
+              <div v-if="props.row.sapId!==props.row.conversionFactorId"
+                   class="control">
+                <b-taglist attached>
+                  <b-tag type="is-success is-small">秀田</b-tag>
+                  <b-tag type="is-danger is-small">{{ props.row.sapId }}</b-tag>
+                </b-taglist>
+              </div>
+              <div class="control">
+                <b-taglist attached>
+                  <b-tag v-if="props.row.sapId===props.row.conversionFactorId"
+                         type="is-success is-small">秀田</b-tag>
+                  <b-tag type="is-dark is-small">3M</b-tag>
+                  <b-tag type="is-info is-small">{{ props.row.conversionFactorId }}</b-tag>
+                </b-taglist>
+              </div>
+            </b-field>
+          </b-table-column>
+
+          <b-table-column label="產編">
+            {{ props.row.productId }}
+          </b-table-column>
+
           <b-table-column label="品名">
             {{ props.row.productName }}
           </b-table-column>
 
           <b-table-column label="售價"
                           numeric>
-            {{ props.row.price|currency }}
+            {{ props.row.unitPrice|currency }}
           </b-table-column>
 
           <b-table-column label="數量"
@@ -54,7 +82,7 @@
 
           <b-table-column label="總額"
                           numeric>
-            {{ (props.row.price*props.row.quantity)|currency }}
+            {{ (props.row.unitPrice*props.row.quantity)|currency }}
           </b-table-column>
 
           <b-table-column label="業務"
@@ -74,57 +102,44 @@
           </section>
         </template>
 
-        <template slot="footer"
-                  v-if="!isEmpty">
+        <template v-if="!isEmpty"
+                  slot="footer">
+          <th/>
           <th>
-            <div class="th-wrap is-centered">
-              項次
-            </div>
+            <div class="th-wrap is-centered"> 項次 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              銷售日期
-            </div>
+            <div class="th-wrap is-centered"> 銷售日期 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              區域
-            </div>
+            <div class="th-wrap is-centered"> 區域 </div>
           </th>
           <th>
-            <div class="th-wrap">
-              公司名稱
-            </div>
+            <div class="th-wrap"> 公司名稱 </div>
           </th>
           <th>
-            <div class="th-wrap">
-              品名
-            </div>
+            <div class="th-wrap"> 3M 編號 </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric">
-              售價
-            </div>
+            <div class="th-wrap"> 產編 </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric">
-              數量
-            </div>
+            <div class="th-wrap"> 品名 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              單位
-            </div>
+            <div class="th-wrap is-numeric"> 售價 </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric">
-              總額
-            </div>
+            <div class="th-wrap is-numeric"> 數量 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered">
-              業務
-            </div>
+            <div class="th-wrap is-centered"> 單位 </div>
+          </th>
+          <th>
+            <div class="th-wrap is-numeric"> 總額 </div>
+          </th>
+          <th>
+            <div class="th-wrap is-centered"> 業務 </div>
           </th>
         </template>
       </b-table>
@@ -151,6 +166,11 @@ export default {
     },
   },
   mixins: [displayErrorDialog],
+  data () {
+    return {
+      localPreservedDataEntries: [],
+    }
+  },
   computed: {
     ...mapGetters({
       invoiceQueryPeriod: 'invoiceQueryPeriod',
@@ -180,6 +200,11 @@ export default {
       })
     },
     isEmpty () { return this.totalRecords === 0 },
+    preservedIndexList () {
+      return this.localPreservedDataEntries.map(entry => {
+        return entry.index
+      })
+    },
   },
   watch: {
     invoiceQueryPeriod (invoiceQueryPeriod) {
@@ -212,6 +237,17 @@ export default {
               return this.displayErrorDialog('銷售資料表讀取異常')
             })
         })
+        .then(() => {
+          this.indexedData.forEach((entry, index) => {
+            if (entry._preserved !== null) {
+              if (entry._preserved) this.localPreservedDataEntries.push(this.indexedData[index])
+            } else {
+              if ((entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))) {
+                this.localPreservedDataEntries.push(this.indexedData[index])
+              }
+            }
+          })
+        })
     },
     avoidLengthQuery () {
       if (this.invoiceQueryPeriod > 62) {
@@ -228,6 +264,23 @@ export default {
         this.getLiveData()
       }
     },
+    markUnpreservedRecord (row, index) {
+      return this.preservedIndexList.indexOf(row.index) === -1 ? 'not-preserved' : ''
+    },
+    processPreservationUpdate (preservationList, updatedEntry) {
+      let preservationState = this.preservedIndexList.indexOf(updatedEntry.index) === -1
+      this.$store.dispatch('invoices/upsert', Object.assign({}, updatedEntry, { _preserved: preservationState }))
+    },
   },
 }
 </script>
+
+<style>
+th.checkbox-cell label {
+  visibility: hidden;
+}
+
+.not-preserved {
+  color: lightgray;
+}
+</style>

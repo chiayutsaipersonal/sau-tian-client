@@ -1,7 +1,8 @@
 <template>
   <div id="pagination-control"
        class="level">
-    <div class="left-left">
+    <div v-if="$route.name==='invoices'"
+         class="left-left">
       <div class="level-item">
         <b-select v-model="localProductFilter"
                   size="is-medium"
@@ -17,6 +18,8 @@
         </b-select>
       </div>
     </div>
+    <div v-else
+         class="level-right"/>
     <div v-if="$route.name==='invoices'"
          class="level-right" />
     <div v-else

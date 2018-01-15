@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <title-bar/>
+    <title-bar />
 
-    <navigation-menu/>
+    <navigation-menu />
 
     <pagination-control v-if="activatePaginationControl" />
 
     <div class="content">
-      <router-view/>
+      <router-view />
     </div>
   </div>
 </template>

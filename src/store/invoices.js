@@ -25,6 +25,21 @@ const invoices = {
         return Promise.reject(error)
       })
     },
+    upsert: (context, payload) => {
+      context.commit('setLoadingState', true)
+      let url = '/sauTian/api/invoices'
+      return axios({
+        method: 'post',
+        url,
+        data: payload,
+      }).then(() => {
+        context.commit('setLoadingState', false)
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('setLoadingState', false)
+        return Promise.reject(error)
+      })
+    },
   },
   mutations: {
     clearData: state => {
@@ -67,6 +82,7 @@ const invoices = {
       state.next = null
       state.last = null
       state.productFilter = null
+      state.preservedDataEntries = []
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
@@ -78,9 +94,7 @@ const invoices = {
   getters: {
     isLoading: state => state.loading,
     isUpdating: state => state.updating,
-    uniqueProducts: state => {
-      return [...new Set(state.data.map(item => item.productId))]
-    },
+    uniqueProducts: state => [...new Set(state.data.map(item => item.productId))],
   },
   state: {
     loading: false,
@@ -96,6 +110,7 @@ const invoices = {
     next: null,
     last: null,
     productFilter: null,
+    preservedDataEntries: [],
   },
 }
 

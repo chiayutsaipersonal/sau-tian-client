@@ -41,7 +41,7 @@
             </b-field>
           </b-table-column>
 
-          <b-table-column label="編號">
+          <b-table-column label="產編">
             {{ props.row.id }}
           </b-table-column>
 
@@ -96,7 +96,7 @@
             <div class="th-wrap"> 3M 編號 </div>
           </th>
           <th>
-            <div class="th-wrap"> 編號 </div>
+            <div class="th-wrap"> 產編 </div>
           </th>
           <th>
             <div class="th-wrap"> 品名 </div>
