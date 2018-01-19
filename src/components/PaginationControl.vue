@@ -19,7 +19,7 @@
       </div>
     </div>
     <div v-else
-         class="level-right"/>
+         class="level-right" />
     <div v-if="$route.name==='invoices'"
          class="level-right" />
     <div v-else
@@ -99,11 +99,11 @@
 import { mapGetters, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
-import routeLabel from '../mixins/routeLabel'
+import viewLabel from '../mixins/viewLabel'
 
 export default {
   name: 'PaginationControl',
-  mixins: [displayErrorDialog, routeLabel],
+  mixins: [displayErrorDialog, viewLabel],
   data () {
     return {
       localCurrentPage: null,
@@ -114,7 +114,6 @@ export default {
   computed: {
     ...mapGetters('invoices', { uniqueProducts: 'uniqueProducts' }),
     ...mapState('invoices', { productFilter: 'productFilter' }),
-    loading () { return this.$store.state[this.$route.name].loading },
     totalRecords () { return this.$store.state[this.$route.name].totalRecords },
     perPage () { return this.$store.state[this.$route.name].perPage },
     totalPages () { return this.$store.state[this.$route.name].totalPages },
@@ -137,10 +136,9 @@ export default {
       let paginationQuery = { perPage, currentPage }
       return this.$store
         .dispatch(`${this.$route.name}/fetch`, paginationQuery)
-        .then(() => Promise.resolve())
         .catch(error => {
           console.error(error)
-          return this.displayErrorDialog(`${this.routeLabel()}資料表讀取異常`)
+          return this.displayErrorDialog(`${this.viewLabel()}資料表讀取異常`)
         })
     },
   },

@@ -83,6 +83,7 @@ export default {
       convFactorId: '',
       convFactor: '',
       lookupResults: [],
+      liveSearchTimer: null,
     }
   },
   computed: {
@@ -103,13 +104,17 @@ export default {
     convFactorId (convFactorId) {
       if (convFactorId === '') {
         this.convFactorId = null
+        clearTimeout(this.liveSearchTimer)
       } else {
-        return this.check({
-          id: this.id,
-          conversionFactorId: convFactorId,
-        }).then(results => {
-          this.lookupResults = results
-        })
+        clearTimeout(this.liveSearchTimer)
+        this.liveSearchTimer = setTimeout(() => {
+          this.check({
+            id: this.id,
+            conversionFactorId: convFactorId,
+          }).then(results => {
+            this.lookupResults = results
+          })
+        }, 750)
       }
     },
     convFactor (convFactor) {

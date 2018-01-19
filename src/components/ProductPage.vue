@@ -6,7 +6,6 @@
                :narrowed="true"
                :hoverable="true"
                :mobile-cards="false"
-               :loading="loading"
                :data="indexedData"
                :opened-detailed="editPaneInView"
                detailed
@@ -133,8 +132,8 @@ export default {
     }
   },
   computed: {
+    ...mapState({ loading: 'loading' }),
     ...mapState('products', {
-      loading: 'loading',
       data: 'data',
       totalRecords: 'totalRecords',
       perPage: 'perPage',

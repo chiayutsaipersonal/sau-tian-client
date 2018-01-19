@@ -6,7 +6,6 @@
                :narrowed="true"
                :hoverable="true"
                :mobile-cards="false"
-               :loading="loading"
                :data="indexedData">
         <template slot-scope="props">
 
@@ -143,8 +142,8 @@ export default {
   name: 'ClientPage',
   mixins: [displayErrorDialog],
   computed: {
+    ...mapState({ loading: 'loading' }),
     ...mapState('clients', {
-      loading: 'loading',
       data: 'data',
       totalRecords: 'totalRecords',
       perPage: 'perPage',

@@ -9,10 +9,14 @@
     <div class="content">
       <router-view />
     </div>
+    <b-loading :active="loading"
+               :can-cancel="false"/>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import TitleBar from '@/components/TitleBar'
 import NavigationMenu from '@/components/NavigationMenu'
 import PaginationControl from '@/components/PaginationControl'
@@ -21,6 +25,7 @@ export default {
   name: 'App',
   components: { TitleBar, NavigationMenu, PaginationControl },
   computed: {
+    ...mapState({ loading: 'loading' }),
     activatePaginationControl: function () {
       return this.$route.name !== 'home'
     },
@@ -50,7 +55,8 @@ export default {
   overflow-y: scroll;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: auto auto auto;
-  grid-template-areas: "t t t t t t t t t t t t" "n n p p p p p p p p p p"
+  grid-template-areas:
+    "t t t t t t t t t t t t" "n n p p p p p p p p p p"
     "n n c c c c c c c c c c";
 }
 .content::-webkit-scrollbar {

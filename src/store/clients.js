@@ -4,23 +4,20 @@ const clients = {
   namespaced: true,
   actions: {
     fetch: (context, payload) => {
-      if (context.state.loading || context.state.updating) {
-        return Promise.resolve()
-      }
       context.commit('clearData')
       let url = '/sauTian/api/clients'
       if (payload) url += `?per_page=${payload.perPage}&page=${payload.currentPage}`
-      context.commit('setLoadingState', true)
+      context.commit('startLoading', null, { root: true })
       return axios({
         method: 'get',
         url,
       }).then(result => {
         context.commit('register', result.data)
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
         context.commit('reset')
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.reject(error)
       })
     },
@@ -54,7 +51,6 @@ const clients = {
       }
     },
     reset: state => {
-      state.loading = false
       state.data = []
       state.totalRecords = 0
       state.perPage = 10
@@ -71,12 +67,8 @@ const clients = {
     },
   },
   getters: {
-    isLoading: state => state.loading,
-    isUpdating: state => state.updating,
   },
   state: {
-    loading: false,
-    updating: false,
     data: [],
     totalRecords: 0,
     perPage: 10,

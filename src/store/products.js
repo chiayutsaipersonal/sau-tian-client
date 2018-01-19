@@ -5,52 +5,81 @@ const products = {
   actions: {
     clear: (context, productId) => {
       let url = `/sauTian/api/products/${productId}`
+      context.commit('startLoading', null, { root: true })
       return axios({ method: 'delete', url })
-        .then(() => Promise.resolve())
-        .catch(error => Promise.reject(error))
+        .then(() => {
+          context.commit('endLoading', null, { root: true })
+          return Promise.resolve()
+        })
+        .catch(error => {
+          context.commit('endLoading', null, { root: true })
+          return Promise.reject(error)
+        })
     },
     check: (context, payload) => {
       let url = `/sauTian/api/products/${payload.id}/conversionFactors/${payload.conversionFactorId}`
+      // context.commit('startLoading', null, { root: true })
       return axios({ method: 'get', url })
-        .then(result => Promise.resolve(result.data.data))
-        .catch(error => Promise.reject(error))
+        .then(result => {
+          // context.commit('endLoading', null, { root: true })
+          return Promise.resolve(result.data.data)
+        })
+        .catch(error => {
+          // context.commit('endLoading', null, { root: true })
+          return Promise.reject(error)
+        })
     },
     fetch: (context, payload) => {
-      if (context.state.loading || context.state.updating) {
-        return Promise.resolve()
-      }
       context.commit('clearData')
       let url = '/sauTian/api/products'
       if (payload) url += `?per_page=${payload.perPage}&page=${payload.currentPage}`
-      context.commit('setLoadingState', true)
+      context.commit('startLoading', null, { root: true })
       return axios({
         method: 'get',
         url,
       }).then(result => {
         context.commit('register', result.data)
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
         context.commit('reset')
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
+        return Promise.reject(error)
+      })
+    },
+    upload: (context, data) => {
+      context.commit('startLoading', null, { root: true })
+      return axios({
+        method: 'post',
+        headers: { 'Content-Type': 'multipart/form-data' },
+        url: '/sauTian/api/products/upload',
+        data,
+      }).then(() => {
+        context.commit('endLoading', null, { root: true })
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('reset')
+        context.commit('endLoading', null, { root: true })
         return Promise.reject(error)
       })
     },
     upsert: (context, payload) => {
-      if (context.state.loading || context.state.updating) {
-        return Promise.resolve()
-      }
+      context.commit('startLoading', null, { root: true })
       return axios({
         method: 'post',
         url: '/sauTian/api/products',
         data: {
+          id: payload.conversionFactorId,
           productId: payload.id,
-          conversionFactorId: payload.conversionFactorId,
           conversionFactor: payload.conversionFactor,
         },
       }).then(() => {
+        context.commit('endLoading', null, { root: true })
         return Promise.resolve()
-      }).catch(error => Promise.reject(error))
+      }).catch(error => {
+        context.commit('endLoading', null, { root: true })
+        return Promise.reject(error)
+      })
     },
   },
   mutations: {

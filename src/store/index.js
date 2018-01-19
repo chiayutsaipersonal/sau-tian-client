@@ -19,6 +19,8 @@ const store = new Vuex.Store({
   mutations: {
     setStartDate: (state, startDate) => { state.startDate = startDate || null },
     setEndDate: (state, endDate) => { state.endDate = endDate || null },
+    startLoading: state => { state.loading = true },
+    endLoading: state => { state.loading = false },
   },
   getters: {
     invoiceQueryPeriod: state => {
@@ -37,6 +39,7 @@ const store = new Vuex.Store({
   state: {
     startDate: null,
     endDate: null,
+    loading: false,
   },
 })
 
