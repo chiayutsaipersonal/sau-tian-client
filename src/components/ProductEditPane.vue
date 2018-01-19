@@ -4,10 +4,12 @@
              position="is-right">
       <b-field expanded>
         <b-input placeholder="3M 編號"
+                 size="is-large"
                  v-model.trim.lazy="convFactorId" />
       </b-field>
       <b-field expanded>
         <b-input type="number"
+                 size="is-large"
                  step="0.1"
                  min="0"
                  placeholder="轉換率"
@@ -15,7 +17,7 @@
       </b-field>
       <b-field>
         <p class="control">
-          <button class="button is-info"
+          <button class="button is-info is-large"
                   :disabled="isPrestine || hasEmptyValue"
                   @click="confirmEdit">
             更新
@@ -24,7 +26,7 @@
       </b-field>
       <b-field>
         <p class="control">
-          <button class="button is-success"
+          <button class="button is-success is-large"
                   :disabled="!conversionFactorId"
                   @click="confirmClear">
             重置
@@ -33,7 +35,7 @@
       </b-field>
       <b-field>
         <p class="control">
-          <button class="button is-danger"
+          <button class="button is-danger is-large"
                   @click="$emit('close', id)">
             關閉
           </button>

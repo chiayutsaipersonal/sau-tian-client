@@ -3,7 +3,7 @@
     <section>
       <b-table :bordered="false"
                :striped="true"
-               :narrowed="true"
+               :narrowed="narrowRecords"
                :hoverable="true"
                :mobile-cards="false"
                :data="indexedData">
@@ -142,7 +142,10 @@ export default {
   name: 'ClientPage',
   mixins: [displayErrorDialog],
   computed: {
-    ...mapState({ loading: 'loading' }),
+    ...mapState({
+      loading: 'loading',
+      narrowRecords: 'narrowRecords',
+    }),
     ...mapState('clients', {
       data: 'data',
       totalRecords: 'totalRecords',

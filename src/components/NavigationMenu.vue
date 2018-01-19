@@ -24,48 +24,59 @@
       產品列表
     </button>
 
+    <br>
     <template v-if="$route.name==='products'">
-      <br>
       <b-field>
         <b-upload v-model="conversionFactorFiles"
                   accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                   @input="handleConvFactorFileUpload($event)">
-          <a class="button is-info is-outlined is-medium">
+          <a class="button is-info is-outlined is-fullwidth is-medium">
             <span>上傳轉換率</span>
           </a>
         </b-upload>
       </b-field>
     </template>
-
-    <br>
-    <button class="button is-outlined is-fullwidth is-medium"
-            :disabled="!routeDataReady"
-            @click="reloadRouteData">
-      重新載入
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            v-if="$route.name!=='home'"
+            @click="switchRecordViewMode">
+      <template v-if="!narrowRecords">
+        窄幅檢視
+      </template>
+      <template v-else>
+        寬幅檢視
+      </template>
     </button>
   </aside>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
+
 import displayErrorDialog from '../mixins/displayErrorDialog'
+import switchRoute from '../mixins/switchRoute'
 import viewLabel from '../mixins/viewLabel'
 
 export default {
   name: 'NavigationBar',
-  mixins: [displayErrorDialog, viewLabel],
+  mixins: [
+    displayErrorDialog,
+    switchRoute,
+    viewLabel,
+  ],
   data () {
     return {
       conversionFactorFiles: [],
     }
   },
   computed: {
-    routeDataReady: function () {
-      if (this.$route.name === 'home') return false
-      return this.$store.state[this.$route.name].totalRecords > 0
-    },
+    ...mapState({ narrowRecords: 'narrowRecords' }),
   },
   methods: {
-    handleConvFactorFileUpload: function (files) {
+    ...mapMutations({
+      viewNarrowRecords: 'viewNarrowRecords',
+      viewWideRecords: 'viewWideRecords',
+    }),
+    handleConvFactorFileUpload (files) {
       let formData = new FormData()
       if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
       formData.append('conversionFactors', files[0])
@@ -83,7 +94,7 @@ export default {
           }),
       })
     },
-    reloadRouteData: function () {
+    reloadRouteData () {
       return this.$store
         .dispatch(`${this.$route.name}/fetch`, {
           perPage: this.$store.state[this.$route.name].perPage,
@@ -94,8 +105,12 @@ export default {
           return this.displayErrorDialog(`${this.viewLabel()}資料表讀取異常`)
         })
     },
-    switchRoute: function (path) {
-      if (this.$route.path !== path) this.$router.push(path)
+    switchRecordViewMode () {
+      if (this.narrowRecords) {
+        this.viewWideRecords()
+      } else {
+        this.viewNarrowRecords()
+      }
     },
   },
 }

@@ -30,6 +30,12 @@
           輸出報告
         </button>
       </div>
+      <div class="level-item">
+        <button class="button is-medium is-danger"
+                @click="confirmReload">
+          重新載入 POS 系統資料
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -37,8 +43,15 @@
 <script>
 import moment from 'moment-timezone'
 
+import displayErrorDialog from '../mixins/displayErrorDialog'
+import switchRoute from '../mixins/switchRoute'
+
 export default {
   name: 'TitleBar',
+  mixins: [
+    displayErrorDialog,
+    switchRoute,
+  ],
   data () {
     return {
       startDate: null,
@@ -62,6 +75,37 @@ export default {
           ? moment(new Date(this.endDate)).format('YYYY-MM-DD')
           : null
       )
+    },
+  },
+  methods: {
+    confirmReload () {
+      this.$dialog.confirm({
+        message: '<strong>程式將重新讀取最新 POS 資料，<br>請避免在讀取作業結束之前同時操作 POS 系統</strong>',
+        type: 'is-info',
+        hasIcon: true,
+        icon: 'exclamation-circle',
+        iconPack: 'fa',
+        onConfirm: () => this.reloadPosData(),
+      })
+    },
+    reloadPosData () {
+      this.switchRoute('sauTian')
+      this.$store
+        .dispatch('reloadPosData')
+        .then(() => {
+          this.$snackbar.open({
+            duration: 5000,
+            message: 'POS 系統資料讀取完畢，敬請繼續操作',
+            type: 'is-warning',
+            position: 'is-top',
+            queue: false,
+            actionText: 'OK',
+          })
+        })
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('POS 系統資料讀取失敗')
+        })
     },
   },
 }

@@ -4,39 +4,36 @@ const invoices = {
   namespaced: true,
   actions: {
     fetch: (context, payload = {}) => {
-      if (context.state.loading || context.state.updating) {
-        return Promise.resolve()
-      }
       context.commit('clearData')
       let url = `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
       if (payload.perPage && payload.currentPage) url += `&per_page=${payload.perPage}&page=${payload.currentPage}`
       if (payload.productId) url += `&productId=${payload.productId}`
-      context.commit('setLoadingState', true)
+      context.commit('startLoading', null, { root: true })
       return axios({
         method: 'get',
         url,
       }).then(result => {
         context.commit('register', result.data)
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
         context.commit('reset')
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.reject(error)
       })
     },
     upsert: (context, payload) => {
-      context.commit('setLoadingState', true)
       let url = '/sauTian/api/invoices'
+      context.commit('startLoading', null, { root: true })
       return axios({
         method: 'post',
         url,
         data: payload,
       }).then(() => {
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
-        context.commit('setLoadingState', false)
+        context.commit('endLoading', null, { root: true })
         return Promise.reject(error)
       })
     },

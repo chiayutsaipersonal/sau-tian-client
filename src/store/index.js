@@ -1,3 +1,4 @@
+import axios from 'axios'
 import moment from 'moment-timezone'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -15,12 +16,31 @@ const store = new Vuex.Store({
     invoices,
     products,
   },
-  actions: {},
+  actions: {
+    reloadPosData: context => {
+      context.commit('setStartDate', null)
+      context.commit('setEndDate', null)
+      context.commit('viewWideRecords')
+      context.commit('startLoading')
+      return axios({
+        method: 'get',
+        url: '/sauTian/api/reloadPosData',
+      }).then(() => {
+        context.commit('endLoading')
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('endLoading')
+        return Promise.reject(error)
+      })
+    },
+  },
   mutations: {
     setStartDate: (state, startDate) => { state.startDate = startDate || null },
     setEndDate: (state, endDate) => { state.endDate = endDate || null },
     startLoading: state => { state.loading = true },
     endLoading: state => { state.loading = false },
+    viewNarrowRecords: state => { state.narrowRecords = true },
+    viewWideRecords: state => { state.narrowRecords = false },
   },
   getters: {
     invoiceQueryPeriod: state => {
@@ -40,6 +60,7 @@ const store = new Vuex.Store({
     startDate: null,
     endDate: null,
     loading: false,
+    narrowRecords: false,
   },
 })
 

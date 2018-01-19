@@ -4,18 +4,20 @@
     <div v-if="$route.name==='invoices'"
          class="left-left">
       <div class="level-item">
-        <b-select v-model="localProductFilter"
-                  size="is-medium"
-                  placeholder="顯示所有產品"
-                  :disabled="$route.name!=='invoices'"
-                  @input="setProductFilter($event)">
-          <option :value="null">顯示所有產品</option>
-          <option v-for="productId in uniqueProducts"
-                  :value="productId"
-                  :key="productId">
-            僅顯示 {{ productId }}
-          </option>
-        </b-select>
+        <template v-if="uniqueProducts.length>0">
+          <b-select v-model="localProductFilter"
+                    size="is-medium"
+                    placeholder="顯示所有產品"
+                    :disabled="$route.name!=='invoices'"
+                    @input="setProductFilter($event)">
+            <option :value="null">顯示所有產品</option>
+            <option v-for="productId in uniqueProducts"
+                    :value="productId"
+                    :key="productId">
+              僅顯示 {{ productId }}
+            </option>
+          </b-select>
+        </template>
       </div>
     </div>
     <div v-else

@@ -3,7 +3,7 @@
     <section>
       <b-table :bordered="false"
                :striped="true"
-               :narrowed="true"
+               :narrowed="narrowRecords"
                :hoverable="true"
                :mobile-cards="false"
                :data="indexedData"
@@ -132,7 +132,10 @@ export default {
     }
   },
   computed: {
-    ...mapState({ loading: 'loading' }),
+    ...mapState({
+      loading: 'loading',
+      narrowRecords: 'narrowRecords',
+    }),
     ...mapState('products', {
       data: 'data',
       totalRecords: 'totalRecords',
@@ -140,15 +143,15 @@ export default {
       totalPages: 'totalPages',
       currentPage: 'currentPage',
     }),
-    indexedData: function () {
+    indexedData () {
       return this.data.map((record, index) => {
         record.index = index + 1
         return record
       })
     },
-    isEmpty: function () { return this.totalRecords === 0 },
+    isEmpty () { return this.totalRecords === 0 },
   },
-  mounted: function () {
+  mounted () {
     if (this.isEmpty) {
       return this
         .fetch({
@@ -168,7 +171,7 @@ export default {
         })
     }
   },
-  beforeDestroy: function () {
+  beforeDestroy () {
     this.reset()
   },
   methods: {

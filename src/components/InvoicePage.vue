@@ -2,66 +2,58 @@
   <div id="invoice-page">
     <section>
       <b-table :bordered="false"
-               :narrowed="true"
-               :hoverable="true"
+               :narrowed="narrowRecords"
+               :hoverable="false"
                :mobile-cards="false"
                :loading="loading"
                :data="indexedData"
                :checked-rows.sync="localPreservedDataEntries"
                checkable
-               :row-class="markUnpreservedRecord"
                @check="processPreservationUpdate">
         <template slot-scope="props">
 
           <b-table-column label="項次"
-                          width="60"
                           centered>
-            {{ perPage * (currentPage - 1) + props.row.index }}
+            <b-tag type="is-small">
+              {{ perPage * (currentPage - 1) + props.row.index }}
+            </b-tag>
           </b-table-column>
 
           <b-table-column label="銷售日期"
-                          centered
-                          width="100">
-            {{ props.row.date }}
-          </b-table-column>
-
-          <b-table-column label="區域"
-                          width="60"
                           centered>
-            {{ props.row.areaId }}
+            <b-tag type="is-small">
+              {{ props.row.date }}
+            </b-tag>
           </b-table-column>
 
-          <b-table-column label="公司名稱">
-            {{ props.row.companyName }}
+          <b-table-column label="客戶">
+            <div class="control">
+              <b-taglist attached>
+                <template v-if="props.row.areaId">
+                  <b-tag type="is-success is-small">{{ props.row.areaId }}</b-tag>
+                  <b-tag type="is-info is-small"> {{ props.row.companyName }} </b-tag>
+                </template>
+                <template v-else>
+                  <b-tag type="is-small"> {{ props.row.companyName }} </b-tag>
+                </template>
+              </b-taglist>
+            </div>
           </b-table-column>
 
-          <b-table-column label="3M 編號">
-            <b-field grouped
-                     group-multiline>
-              <div v-if="props.row.sapId!==props.row.conversionFactorId"
-                   class="control">
-                <b-taglist attached>
-                  <b-tag type="is-success is-small">秀田</b-tag>
-                  <b-tag type="is-danger is-small">{{ props.row.sapId }}</b-tag>
-                </b-taglist>
-              </div>
-              <div class="control">
-                <b-taglist attached>
-                  <b-tag v-if="props.row.sapId===props.row.conversionFactorId"
-                         type="is-success is-small">秀田</b-tag>
-                  <b-tag type="is-dark is-small">3M</b-tag>
-                  <b-tag type="is-info is-small">{{ props.row.conversionFactorId }}</b-tag>
-                </b-taglist>
-              </div>
-            </b-field>
-          </b-table-column>
-
-          <b-table-column label="產編">
-            {{ props.row.productId }}
-          </b-table-column>
-
-          <b-table-column label="品名">
-            {{ props.row.productName }}
+          <b-table-column label="產品">
+            <div class="control">
+              <b-taglist attached>
+                <b-tag type="is-warning is-small">
+                  {{ props.row.productId }}
+                </b-tag>
+                <b-tag type="is-info is-small">
+                  {{ props.row.conversionFactorId }}
+                </b-tag>
+                <b-tag type="is-small">
+                  {{ props.row.productName }}
+                </b-tag>
+              </b-taglist>
+            </div>
           </b-table-column>
 
           <b-table-column label="售價"
@@ -75,20 +67,13 @@
           </b-table-column>
 
           <b-table-column label="單位"
-                          centered
-                          width="60">
+                          centered>
             {{ props.row.unit }}
           </b-table-column>
 
           <b-table-column label="總額"
                           numeric>
             {{ (props.row.unitPrice*props.row.quantity)|currency }}
-          </b-table-column>
-
-          <b-table-column label="業務"
-                          centered
-                          width="80">
-            {{ props.row.employeeId }}
           </b-table-column>
         </template>
 
@@ -112,19 +97,10 @@
             <div class="th-wrap is-centered"> 銷售日期 </div>
           </th>
           <th>
-            <div class="th-wrap is-centered"> 區域 </div>
+            <div class="th-wrap"> 客戶 </div>
           </th>
           <th>
-            <div class="th-wrap"> 公司名稱 </div>
-          </th>
-          <th>
-            <div class="th-wrap"> 3M 編號 </div>
-          </th>
-          <th>
-            <div class="th-wrap"> 產編 </div>
-          </th>
-          <th>
-            <div class="th-wrap"> 品名 </div>
+            <div class="th-wrap"> 產品 </div>
           </th>
           <th>
             <div class="th-wrap is-numeric"> 售價 </div>
@@ -137,9 +113,6 @@
           </th>
           <th>
             <div class="th-wrap is-numeric"> 總額 </div>
-          </th>
-          <th>
-            <div class="th-wrap is-centered"> 業務 </div>
           </th>
         </template>
       </b-table>
@@ -188,6 +161,7 @@ export default {
     ...mapState({
       startDate: 'startDate',
       endDate: 'endDate',
+      narrowRecords: 'narrowRecords',
     }),
     indexedData () {
       return this.data.map((record, index) => {
@@ -280,7 +254,9 @@ th.checkbox-cell label {
   visibility: hidden;
 }
 
-.not-preserved {
-  color: lightgray;
+.is-checked {
+  font-weight: bold;
+  color: yellow;
+  background-color: teal;
 }
 </style>

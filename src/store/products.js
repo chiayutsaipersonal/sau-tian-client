@@ -18,16 +18,9 @@ const products = {
     },
     check: (context, payload) => {
       let url = `/sauTian/api/products/${payload.id}/conversionFactors/${payload.conversionFactorId}`
-      // context.commit('startLoading', null, { root: true })
       return axios({ method: 'get', url })
-        .then(result => {
-          // context.commit('endLoading', null, { root: true })
-          return Promise.resolve(result.data.data)
-        })
-        .catch(error => {
-          // context.commit('endLoading', null, { root: true })
-          return Promise.reject(error)
-        })
+        .then(result => Promise.resolve(result.data.data))
+        .catch(error => Promise.reject(error))
     },
     fetch: (context, payload) => {
       context.commit('clearData')
