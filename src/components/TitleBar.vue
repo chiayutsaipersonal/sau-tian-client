@@ -89,6 +89,8 @@ export default {
       })
     },
     reloadPosData () {
+      this.startDate = null
+      this.endDate = null
       this.switchRoute('sauTian')
       this.$store
         .dispatch('reloadPosData')
