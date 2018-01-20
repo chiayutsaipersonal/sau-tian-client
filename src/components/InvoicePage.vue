@@ -80,9 +80,10 @@
         <template slot="empty">
           <section class="section">
             <div class="content has-text-grey has-text-centered">
-              <p v-if="!isValidDateRange">銷售資料查詢時間區間尚未設定</p>
-              <p v-else-if="loading">系統正在讀取銷售資料</p>
-              <p v-else>未發現可顯示銷售資料</p>
+              <!-- <p v-if="!isValidDateRange">銷售資料查詢時間區間尚未設定</p> -->
+              <!-- <p v-else-if="loading">系統正在讀取銷售資料</p> -->
+              <!-- <p v-else>未發現可顯示銷售資料</p> -->
+              <p v-if="isEmpty">未發現可顯示銷售資料</p>
             </div>
           </section>
         </template>
@@ -122,7 +123,10 @@
 
 <script>
 import numeral from 'numeral'
-import { mapGetters, mapState } from 'vuex'
+import {
+  //  mapGetters,
+  mapState,
+} from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
@@ -145,10 +149,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      invoiceQueryPeriod: 'invoiceQueryPeriod',
-      isValidDateRange: 'isValidDateRange',
-    }),
+    // ...mapGetters({
+    //   invoiceQueryPeriod: 'invoiceQueryPeriod',
+    //   isValidDateRange: 'isValidDateRange',
+    // }),
     ...mapState('invoices', {
       loading: 'loading',
       data: 'data',
@@ -180,15 +184,18 @@ export default {
       })
     },
   },
-  watch: {
-    invoiceQueryPeriod (invoiceQueryPeriod) {
-      if (invoiceQueryPeriod && this.isValidDateRange) this.avoidLengthQuery()
-    },
-  },
+  // watch: {
+  //   invoiceQueryPeriod (invoiceQueryPeriod) {
+  //     if (invoiceQueryPeriod && this.isValidDateRange) this.avoidLengthQuery()
+  //   },
+  // },
   mounted () {
-    if (this.isValidDateRange && this.isEmpty) {
-      this.avoidLengthQuery()
+    if (this.isEmpty) {
+      this.getLiveData()
     }
+    // if (this.isValidDateRange && this.isEmpty) {
+    //   this.avoidLengthQuery()
+    // }
   },
   beforeDestroy: function () {
     this.$store.commit('clients/reset')
@@ -223,21 +230,21 @@ export default {
           })
         })
     },
-    avoidLengthQuery () {
-      if (this.invoiceQueryPeriod > 62) {
-        this.$dialog.confirm({
-          title: '查閱時間區段大於預設結算週期',
-          message: `目前設定時間區段為 ${this.invoiceQueryPeriod} 日，請確認進行以避免長時間等待`,
-          type: 'is-danger',
-          hasIcon: true,
-          icon: 'exclamation-circle',
-          iconPack: 'fa',
-          onConfirm: () => this.getLiveData(),
-        })
-      } else {
-        this.getLiveData()
-      }
-    },
+    // avoidLengthQuery () {
+    //   if (this.invoiceQueryPeriod > 62) {
+    //     this.$dialog.confirm({
+    //       title: '查閱時間區段大於預設結算週期',
+    //       message: `目前設定時間區段為 ${this.invoiceQueryPeriod} 日，請確認進行以避免長時間等待`,
+    //       type: 'is-danger',
+    //       hasIcon: true,
+    //       icon: 'exclamation-circle',
+    //       iconPack: 'fa',
+    //       onConfirm: () => this.getLiveData(),
+    //     })
+    //   } else {
+    //     this.getLiveData()
+    //   }
+    // },
     markUnpreservedRecord (row, index) {
       return this.preservedIndexList.indexOf(row.index) === -1 ? 'not-preserved' : ''
     },
