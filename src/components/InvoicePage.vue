@@ -256,7 +256,7 @@ th.checkbox-cell label {
 
 .is-checked {
   font-weight: bold;
-  color: yellow;
-  background-color: teal;
+  color: blue;
+  background-color: aquamarine;
 }
 </style>

@@ -10,7 +10,7 @@
       <router-view />
     </div>
     <b-loading :active="loading"
-               :can-cancel="false"/>
+               :can-cancel="false" />
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style>
 #app::-webkit-scrollbar {
   width: 0 !important;
 }
@@ -71,5 +71,9 @@ export default {
   overflow-y: scroll;
   justify-self: stretch;
   align-self: start;
+}
+
+small.help.counter {
+  display: none;
 }
 </style>

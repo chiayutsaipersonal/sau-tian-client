@@ -8,21 +8,22 @@
     </div>
     <div class="level-right">
       <div class="level-item">
-        <b-datepicker size="is-medium"
-                      placeholder="起始日期"
-                      icon="calendar-alt"
-                      :disabled="$route.name!=='invoices'"
-                      :month-names="monthNames"
-                      :readonly="false"
-                      v-model.lazy="startDate" />
-        <h1 class="title is-6">&nbsp;&nbsp;至&nbsp;&nbsp;</h1>
-        <b-datepicker size="is-medium"
-                      placeholder="截止日期"
-                      icon="calendar-alt"
-                      :disabled="$route.name!=='invoices'"
-                      :month-names="monthNames"
-                      :readonly="false"
-                      v-model.lazy="endDate" />
+        <b-field position="is-right">
+          <b-input type="text"
+                   placeholder="檢視年度"
+                   v-model.lazy.number="year"
+                   maxlength="4"
+                   size="is-medium" />
+          <b-select placeholder="Select a name"
+                    v-model="selectedPeriod"
+                    size="is-medium">
+            <option v-for="(period, index) in periods"
+                    :value="index"
+                    :key="index">
+              {{ period }}
+            </option>
+          </b-select>
+        </b-field>
       </div>
       <div class="level-item">
         <button class="button is-medium is-info"
@@ -54,28 +55,31 @@ export default {
   ],
   data () {
     return {
-      startDate: null,
-      endDate: null,
-      monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+      year: null,
+      selectedPeriod: 0,
+      periods: [
+        '1 ~ 2 月份',
+        '3 ~ 4 月份',
+        '5 ~ 6 月份',
+        '7 ~ 8 月份',
+        '9 ~ 10 月份',
+        '11 ~ 12 月份',
+      ],
     }
   },
+  computed: {
+    startMonth () { return (this.selectedPeriod * 2 + 1) },
+    endMonth () { return (this.startMonth + 1) },
+    startDate () { return moment(new Date(`${this.year}-${this.startMonth}-01`)).format('YYYY-MM-DD') },
+    endDate () { return moment(new Date(`${this.year}-${this.endMonth}-01`)).endOf('month').format('YYYY-MM-DD') },
+  },
   watch: {
-    startDate () {
-      this.$store.commit(
-        'setStartDate',
-        this.startDate
-          ? moment(new Date(this.startDate)).format('YYYY-MM-DD')
-          : null
-      )
-    },
-    endDate () {
-      this.$store.commit(
-        'setEndDate',
-        this.endDate
-          ? moment(new Date(this.endDate)).format('YYYY-MM-DD')
-          : null
-      )
-    },
+    startDate () { this.$store.commit('setStartDate', this.startDate) },
+    endDate () { this.$store.commit('setEndDate', this.endDate) },
+  },
+  mounted () {
+    this.year = moment(new Date()).format('YYYY')
+    this.selectedPeriod = Math.floor(parseInt(moment(new Date()).format('M')) / 2)
   },
   methods: {
     confirmReload () {
@@ -89,8 +93,8 @@ export default {
       })
     },
     reloadPosData () {
-      this.startDate = null
-      this.endDate = null
+      this.year = moment(new Date()).format('YYYY')
+      this.selectedPeriod = 0
       this.switchRoute('sauTian')
       this.$store
         .dispatch('reloadPosData')
