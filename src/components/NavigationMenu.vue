@@ -25,17 +25,24 @@
     </button>
 
     <br>
-    <template v-if="$route.name==='products'">
-      <b-field>
-        <b-upload v-model="conversionFactorFiles"
-                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                  @input="handleConvFactorFileUpload($event)">
-          <a class="button is-info is-outlined is-fullwidth is-medium">
-            <span>上傳轉換率</span>
-          </a>
-        </b-upload>
-      </b-field>
-    </template>
+
+    <button v-if="$route.name==='invoices'"
+            class="button is-danger is-fullwidth is-medium"
+            @click="deleteCustomSalesRecord()">
+      <small>重置銷售資料</small>
+    </button>
+
+    <b-upload v-if="$route.name==='products'"
+              v-model="conversionFactorFiles"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+              @input="handleConvFactorFileUpload($event)">
+      <a class="button is-danger is-fullwidth is-medium">
+        <span>
+          <small>上傳轉換率</small>
+        </span>
+      </a>
+    </b-upload>
+
     <button class="button is-info is-outlined is-fullwidth is-medium"
             v-if="$route.name!=='home'"
             @click="switchRecordViewMode">
@@ -69,13 +76,32 @@ export default {
     }
   },
   computed: {
-    ...mapState({ narrowRecords: 'narrowRecords' }),
+    ...mapState({
+      narrowRecords: 'narrowRecords',
+      startDate: 'startDate',
+      endDate: 'endDate',
+    }),
   },
   methods: {
     ...mapMutations({
       viewNarrowRecords: 'viewNarrowRecords',
       viewWideRecords: 'viewWideRecords',
     }),
+    deleteCustomSalesRecord () {
+      this.$dialog.confirm({
+        message: `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間的客製銷售資料<br>請確認！！！`,
+        onConfirm: () => {
+          this.switchRoute('/sauTian')
+          this.$store
+            .dispatch('invoices/delete')
+            .then(() => this.$dialog.alert('客製銷售資料清除完畢'))
+            .catch(error => {
+              console.error(error)
+              return this.displayErrorDialog('產品轉換率批次上傳成功')
+            })
+        },
+      })
+    },
     handleConvFactorFileUpload (files) {
       let formData = new FormData()
       if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')

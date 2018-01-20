@@ -1,4 +1,5 @@
 import axios from 'axios'
+import uuidV4 from 'uuid/v4'
 
 const invoices = {
   namespaced: true,
@@ -12,8 +13,8 @@ const invoices = {
       return axios({
         method: 'get',
         url,
-      }).then(result => {
-        context.commit('register', result.data)
+      }).then(serverResponse => {
+        context.commit('register', serverResponse.data)
         context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
@@ -29,7 +30,8 @@ const invoices = {
         method: 'post',
         url,
         data: payload,
-      }).then(() => {
+      }).then(serverResponse => {
+        context.commit('update', serverResponse.data.data)
         context.commit('endLoading', null, { root: true })
         return Promise.resolve()
       }).catch(error => {
@@ -37,13 +39,52 @@ const invoices = {
         return Promise.reject(error)
       })
     },
+    delete: context => {
+      context.commit('clearData')
+      let url = `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
+      context.commit('startLoading', null, { root: true })
+      return axios({
+        method: 'delete',
+        url,
+      }).then(() => {
+        context.commit('endLoading', null, { root: true })
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('reset')
+        context.commit('endLoading', null, { root: true })
+        return Promise.reject(error)
+      })
+    },
   },
   mutations: {
-    clearData: state => {
-      state.data = []
+    clearData: state => { state.data = [] },
+    update: (state, dataForUpdate) => {
+      let index = state.data.findIndex(entry => {
+        return entry.customSalesDataId === dataForUpdate.id
+      })
+      state.data[index]._clientId = dataForUpdate._clientId
+      state.data[index]._employeeId = dataForUpdate._employeeId
+      state.data[index]._preserved = dataForUpdate._preserved
+      state.data[index]._quantity = dataForUpdate._quantity
+      state.data[index]._unitPrice = dataForUpdate._unitPrice
     },
     register: (state, payload) => {
-      state.data = payload.data
+      payload.data.forEach((entry, index) => {
+        state.data.push(entry)
+        state.data[index].index = index + 1
+        if (!entry.customSalesDataId) {
+          state.data[index].customSalesDataId = uuidV4().toLocaleUpperCase()
+        }
+        if (entry._preserved === null) {
+          if ((entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))) {
+            state.data[index]._preserved = true
+          } else {
+            state.data[index]._preserved = false
+          }
+        } else {
+          state.data[index]._preserved = entry._preserved === 1
+        }
+      })
       if (payload.pagination) {
         state.totalRecords = payload.pagination.totalRecords
         state.perPage = payload.pagination.perPage
@@ -79,7 +120,7 @@ const invoices = {
       state.next = null
       state.last = null
       state.productFilter = null
-      state.preservedDataEntries = []
+      // state.preservedDataEntries = []
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
@@ -107,7 +148,7 @@ const invoices = {
     next: null,
     last: null,
     productFilter: null,
-    preservedDataEntries: [],
+    // preservedDataEntries: [],
   },
 }
 

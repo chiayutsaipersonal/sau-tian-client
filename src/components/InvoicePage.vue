@@ -6,11 +6,16 @@
                :hoverable="false"
                :mobile-cards="false"
                :loading="loading"
-               :data="indexedData"
-               :checked-rows.sync="localPreservedDataEntries"
-               checkable
-               @check="processPreservationUpdate">
+               :data="filteredData"
+               :row-class="row => row._preserved === true ? 'is-checked' : ''">
         <template slot-scope="props">
+
+          <b-table-column label="輸出"
+                          centered>
+            <b-checkbox :value="props.row._preserved"
+                        :disabled="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))"
+                        @input="processPreservationUpdate(props.row, $event)" />
+          </b-table-column>
 
           <b-table-column label="項次"
                           centered>
@@ -28,15 +33,41 @@
 
           <b-table-column label="客戶">
             <div class="control">
-              <b-taglist attached>
-                <template v-if="props.row.areaId">
-                  <b-tag type="is-success is-small">{{ props.row.areaId }}</b-tag>
-                  <b-tag type="is-info is-small"> {{ props.row.companyName }} </b-tag>
-                </template>
-                <template v-else>
-                  <b-tag type="is-small"> {{ props.row.companyName }} </b-tag>
-                </template>
+              <b-taglist v-if="props.row.areaId"
+                         attached>
+                <b-tag type="is-success is-small">{{ props.row.areaId }}</b-tag>
+                <b-tag type="is-info is-small"> {{ props.row.companyName }} </b-tag>
               </b-taglist>
+              <template v-else-if="props.row._clientId===null">
+                <b-select v-if="!props.row.areaId"
+                          :placeholder="props.row.companyName"
+                          size="is-small"
+                          @input="processClientUpdate(props.row, $event)">
+                  <option v-for="client in clientList"
+                          :value="client.id"
+                          :key="client.id">
+                    {{ client.areaId }} - 【{{ client.id }}】 {{ client.name }}
+                  </option>
+                </b-select>
+              </template>
+              <template v-else>
+                <b-field grouped
+                         group-multiline>
+                  <div class="control">
+                    <b-taglist attached>
+                      <b-tag type="is-danger is-small">{{ clientLookup(props.row._clientId).areaId }}</b-tag>
+                      <b-tag type="is-info is-small"
+                             closable
+                             @close="processClientUpdate(props.row, null)">
+                        {{ clientLookup(props.row._clientId).name }}
+                      </b-tag>
+                    </b-taglist>
+                  </div>
+                  <div class="control">
+                    <b-tag type="is-white is-small">{{ props.row.companyName }}</b-tag>
+                  </div>
+                </b-field>
+              </template>
             </div>
           </b-table-column>
 
@@ -80,17 +111,16 @@
         <template slot="empty">
           <section class="section">
             <div class="content has-text-grey has-text-centered">
-              <!-- <p v-if="!isValidDateRange">銷售資料查詢時間區間尚未設定</p> -->
-              <!-- <p v-else-if="loading">系統正在讀取銷售資料</p> -->
-              <!-- <p v-else>未發現可顯示銷售資料</p> -->
-              <p v-if="isEmpty">未發現可顯示銷售資料</p>
+              <p>未發現可顯示銷售資料</p>
             </div>
           </section>
         </template>
 
         <template v-if="!isEmpty"
                   slot="footer">
-          <th/>
+          <th>
+            <div class="th-wrap is-centered"> 輸出 </div>
+          </th>
           <th>
             <div class="th-wrap is-centered"> 項次 </div>
           </th>
@@ -123,10 +153,7 @@
 
 <script>
 import numeral from 'numeral'
-import {
-  //  mapGetters,
-  mapState,
-} from 'vuex'
+import { mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
@@ -144,15 +171,9 @@ export default {
   },
   mixins: [displayErrorDialog],
   data () {
-    return {
-      localPreservedDataEntries: [],
-    }
+    return { clientList: null }
   },
   computed: {
-    // ...mapGetters({
-    //   invoiceQueryPeriod: 'invoiceQueryPeriod',
-    //   isValidDateRange: 'isValidDateRange',
-    // }),
     ...mapState('invoices', {
       loading: 'loading',
       data: 'data',
@@ -167,101 +188,105 @@ export default {
       endDate: 'endDate',
       narrowRecords: 'narrowRecords',
     }),
-    indexedData () {
-      return this.data.map((record, index) => {
-        record.index = index + 1
-        return record
-      }).filter(record => {
+    filteredData () {
+      return this.data.filter(entry => {
         return this.productFilter
-          ? record.productId === this.productFilter
+          ? entry.productId === this.productFilter
           : true
       })
     },
     isEmpty () { return this.totalRecords === 0 },
-    preservedIndexList () {
-      return this.localPreservedDataEntries.map(entry => {
-        return entry.index
-      })
-    },
   },
-  // watch: {
-  //   invoiceQueryPeriod (invoiceQueryPeriod) {
-  //     if (invoiceQueryPeriod && this.isValidDateRange) this.avoidLengthQuery()
-  //   },
-  // },
   mounted () {
-    if (this.isEmpty) {
-      this.getLiveData()
-    }
-    // if (this.isValidDateRange && this.isEmpty) {
-    //   this.avoidLengthQuery()
-    // }
+    if (this.isEmpty) { return this.getLiveData() }
   },
   beforeDestroy: function () {
     this.$store.commit('clients/reset')
     this.$store.commit('invoices/reset')
   },
   methods: {
+    clientLookup (clientId) {
+      let result = this.clientList.filter(client => {
+        return client.id === clientId
+      })
+      if (result.length === 1) {
+        return result[0]
+      } else {
+        return {
+          id: '錯誤',
+          areaId: '錯誤',
+          name: '錯誤',
+        }
+      }
+    },
     getLiveData () {
       this.$store.commit('invoices/setProductFilter', null)
       return this.$store
-        .dispatch('clients/fetch')
+        .dispatch('clients/getClientList')
+        .then(clientList => {
+          this.clientList = clientList
+          return Promise.resolve()
+        })
         .catch(error => {
-          console.error(error)
-          return this.displayErrorDialog('客戶資料表讀取異常')
+          this.$toast.open({
+            duration: 1000,
+            message: '客戶資料表讀取異常',
+            position: 'is-top',
+            type: 'is-danger',
+            queue: false,
+          })
+          return Promise.reject(error)
         })
         .then(() => {
           return this.$store
             .dispatch('invoices/fetch')
             .catch(error => {
-              console.error(error)
-              return this.displayErrorDialog('銷售資料表讀取異常')
+              this.$toast.open({
+                duration: 1000,
+                message: '銷售資料表讀取異常',
+                position: 'is-top',
+                type: 'is-danger',
+                queue: false,
+              })
+              return Promise.reject(error)
             })
         })
-        .then(() => {
-          this.indexedData.forEach((entry, index) => {
-            if (entry._preserved !== null) {
-              if (entry._preserved) this.localPreservedDataEntries.push(this.indexedData[index])
-            } else {
-              if ((entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))) {
-                this.localPreservedDataEntries.push(this.indexedData[index])
-              }
-            }
-          })
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
         })
     },
-    // avoidLengthQuery () {
-    //   if (this.invoiceQueryPeriod > 62) {
-    //     this.$dialog.confirm({
-    //       title: '查閱時間區段大於預設結算週期',
-    //       message: `目前設定時間區段為 ${this.invoiceQueryPeriod} 日，請確認進行以避免長時間等待`,
-    //       type: 'is-danger',
-    //       hasIcon: true,
-    //       icon: 'exclamation-circle',
-    //       iconPack: 'fa',
-    //       onConfirm: () => this.getLiveData(),
-    //     })
-    //   } else {
-    //     this.getLiveData()
-    //   }
-    // },
     markUnpreservedRecord (row, index) {
       return this.preservedIndexList.indexOf(row.index) === -1 ? 'not-preserved' : ''
     },
-    processPreservationUpdate (preservationList, updatedEntry) {
-      let preservationState = this.preservedIndexList.indexOf(updatedEntry.index) === -1
-      this.$store.dispatch('invoices/upsert', Object.assign({}, updatedEntry, { _preserved: preservationState }))
+    processPreservationUpdate (recordBeforeUpdate, preservationState) {
+      this.$store
+        .dispatch(
+          'invoices/upsert',
+          Object.assign({}, recordBeforeUpdate, { _preserved: preservationState })
+        )
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('更改記錄保存狀態失敗')
+        })
+    },
+    processClientUpdate (recordBeforeUpdate, _clientId) {
+      this.$store
+        .dispatch(
+          'invoices/upsert',
+          Object.assign({}, recordBeforeUpdate, { _clientId: _clientId })
+        )
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('更改銷售客戶失敗')
+        })
     },
   },
 }
 </script>
 
 <style>
-th.checkbox-cell label {
-  visibility: hidden;
-}
-
-.is-checked {
+tr.is-checked {
   font-weight: bold;
   color: blue;
   background-color: aquamarine;

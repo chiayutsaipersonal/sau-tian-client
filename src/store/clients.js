@@ -21,6 +21,16 @@ const clients = {
         return Promise.reject(error)
       })
     },
+    getClientList: context => {
+      return axios({
+        method: 'get',
+        url: '/sauTian/api/clients/simpleList',
+      }).then(result => {
+        return Promise.resolve(result.data.data)
+      }).catch(error => {
+        return Promise.reject(error)
+      })
+    },
   },
   mutations: {
     clearData: state => {

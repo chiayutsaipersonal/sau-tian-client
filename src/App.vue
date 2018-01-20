@@ -76,4 +76,8 @@ export default {
 small.help.counter {
   display: none;
 }
+
+p.help.counter {
+  display: none;
+}
 </style>

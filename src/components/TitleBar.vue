@@ -9,9 +9,9 @@
     <div class="level-right">
       <div class="level-item">
         <b-field position="is-right">
-          <b-input type="text"
+          <b-input type="number"
                    placeholder="檢視年度"
-                   v-model.lazy.number="year"
+                   v-model="year"
                    maxlength="4"
                    size="is-medium" />
           <b-select placeholder="Select a name"
