@@ -89,12 +89,50 @@
 
           <b-table-column label="售價"
                           numeric>
-            {{ props.row.unitPrice|currency }}
+            <template v-if="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))">
+              {{ props.row.unitPrice|currency }}
+            </template>
+            <template v-else>
+              <template v-if="props.row._unitPrice!==null">
+                <a class="button is-warning is-small"
+                   @click="unitPricePrompt(props.row)">
+                  {{ props.row._unitPrice|currency }}
+                </a>
+                <a class="button is-success is-small"
+                   @click="processUnitPriceUpdate(props.row, null)">
+                  原始: {{ props.row.unitPrice|currency }}
+                </a>
+              </template>
+              <a v-else
+                 class="button is-success is-small"
+                 @click="unitPricePrompt(props.row)">
+                {{ props.row.unitPrice|currency }}
+              </a>
+            </template>
           </b-table-column>
 
           <b-table-column label="數量"
                           numeric>
-            {{ props.row.quantity|quantity }}
+            <template v-if="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))">
+              {{ props.row.quantity|quantity }}
+            </template>
+            <template v-else>
+              <template v-if="props.row._quantity!==null">
+                <a class="button is-warning is-small"
+                   @click="quantityPrompt(props.row)">
+                  {{ props.row._quantity|quantity }}
+                </a>
+                <a class="button is-success is-small"
+                   @click="processQuantityUpdate(props.row, null)">
+                  原始: {{ props.row.quantity|quantity }}
+                </a>
+              </template>
+              <a v-else
+                 class="button is-success is-small"
+                 @click="quantityPrompt(props.row)">
+                {{ props.row.quantity|quantity }}
+              </a>
+            </template>
           </b-table-column>
 
           <b-table-column label="單位"
@@ -104,7 +142,7 @@
 
           <b-table-column label="總額"
                           numeric>
-            {{ (props.row.unitPrice*props.row.quantity)|currency }}
+            {{ ((props.row._unitPrice||props.row.unitPrice)*(props.row._quantity||props.row.quantity))|currency }}
           </b-table-column>
         </template>
 
@@ -206,16 +244,18 @@ export default {
   },
   methods: {
     clientLookup (clientId) {
-      let result = this.clientList.filter(client => {
-        return client.id === clientId
-      })
-      if (result.length === 1) {
-        return result[0]
-      } else {
-        return {
-          id: '錯誤',
-          areaId: '錯誤',
-          name: '錯誤',
+      if (this.clientList) {
+        let result = this.clientList.filter(client => {
+          return client.id === clientId
+        })
+        if (result.length === 1) {
+          return result[0]
+        } else {
+          return {
+            id: '錯誤',
+            areaId: '錯誤',
+            name: '錯誤',
+          }
         }
       }
     },
@@ -279,6 +319,60 @@ export default {
         .catch(error => {
           console.log(error)
           return this.displayErrorDialog('更改銷售客戶失敗')
+        })
+    },
+    unitPricePrompt (recordBeforeUpdate) {
+      this.$dialog.prompt({
+        message: '請輸入新單價或取消單價更新',
+        inputAttrs: {
+          type: 'number',
+          value: recordBeforeUpdate._unitPrice || recordBeforeUpdate.unitPrice,
+        },
+        onConfirm: _unitPrice => {
+          switch (_unitPrice.toString()) {
+            case (recordBeforeUpdate._unitPrice ? recordBeforeUpdate._unitPrice.toString() : null):
+              return
+            case (recordBeforeUpdate.unitPrice.toString()):
+              return this.processUnitPriceUpdate(recordBeforeUpdate, null)
+            default:
+              return this.processUnitPriceUpdate(recordBeforeUpdate, _unitPrice)
+          }
+        },
+      })
+    },
+    processUnitPriceUpdate (recordBeforeUpdate, _unitPrice) {
+      this.$store
+        .dispatch('invoices/upsert', Object.assign({}, recordBeforeUpdate, { _unitPrice: _unitPrice }))
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('更改售價失敗')
+        })
+    },
+    quantityPrompt (recordBeforeUpdate) {
+      this.$dialog.prompt({
+        message: '請輸入新數量或取消數量更新',
+        inputAttrs: {
+          type: 'number',
+          value: recordBeforeUpdate._quantity || recordBeforeUpdate.quantity,
+        },
+        onConfirm: _quantity => {
+          switch (_quantity.toString()) {
+            case (recordBeforeUpdate._quantity ? recordBeforeUpdate._quantity.toString() : null):
+              return
+            case (recordBeforeUpdate.quantity.toString()):
+              return this.processQuantityUpdate(recordBeforeUpdate, null)
+            default:
+              return this.processQuantityUpdate(recordBeforeUpdate, _quantity)
+          }
+        },
+      })
+    },
+    processQuantityUpdate (recordBeforeUpdate, _quantity) {
+      this.$store
+        .dispatch('invoices/upsert', Object.assign({}, recordBeforeUpdate, { _quantity: _quantity }))
+        .catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('更改銷售數量失敗')
         })
     },
   },

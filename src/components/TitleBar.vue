@@ -100,12 +100,11 @@ export default {
         .dispatch('reloadPosData')
         .then(() => {
           this.$snackbar.open({
-            duration: 5000,
+            duration: 3000,
             message: 'POS 系統資料讀取完畢，敬請繼續操作',
             type: 'is-warning',
-            position: 'is-top',
+            position: 'is-bottom',
             queue: false,
-            actionText: 'OK',
           })
         })
         .catch(error => {

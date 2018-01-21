@@ -120,7 +120,6 @@ const invoices = {
       state.next = null
       state.last = null
       state.productFilter = null
-      // state.preservedDataEntries = []
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
@@ -148,7 +147,6 @@ const invoices = {
     next: null,
     last: null,
     productFilter: null,
-    // preservedDataEntries: [],
   },
 }
 

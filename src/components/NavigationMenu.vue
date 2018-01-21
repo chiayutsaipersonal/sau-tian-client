@@ -44,7 +44,7 @@
     </b-upload>
 
     <button class="button is-info is-outlined is-fullwidth is-medium"
-            v-if="$route.name!=='home'"
+            v-if="$route.name!=='home'&&totalRecords>0"
             @click="switchRecordViewMode">
       <template v-if="!narrowRecords">
         窄幅檢視
@@ -64,7 +64,7 @@ import switchRoute from '../mixins/switchRoute'
 import viewLabel from '../mixins/viewLabel'
 
 export default {
-  name: 'NavigationBar',
+  name: 'NavigationMenu',
   mixins: [
     displayErrorDialog,
     switchRoute,
@@ -81,6 +81,10 @@ export default {
       startDate: 'startDate',
       endDate: 'endDate',
     }),
+    totalRecords () {
+      if (this.$route.name === 'home') return null
+      return this.$store.state[this.$route.name].totalRecords
+    },
   },
   methods: {
     ...mapMutations({

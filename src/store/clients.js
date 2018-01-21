@@ -76,8 +76,7 @@ const clients = {
       state.loading = loadingState
     },
   },
-  getters: {
-  },
+  getters: {},
   state: {
     data: [],
     totalRecords: 0,
