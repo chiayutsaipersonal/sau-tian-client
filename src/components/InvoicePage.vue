@@ -1,5 +1,25 @@
 <template>
   <div id="invoice-page">
+    <section v-if="!isEmpty">
+      <b-field grouped
+               group-multiline>
+        <div class="control">
+          <b-taglist attached>
+            <b-tag type="is-success is-large">實際 POS 總額</b-tag>
+            <b-tag type="is-info is-large"> {{ actualSum|currency }} </b-tag>
+          </b-taglist>
+        </div>
+        <div class="control">
+          <b-taglist attached>
+            <b-tag type="is-success is-large">操作資料總額</b-tag>
+            <b-tag type="is-info is-large"
+                   :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingSum}">
+              {{ workingDataSum|currency }}
+            </b-tag>
+          </b-taglist>
+        </div>
+      </b-field>
+    </section>
     <section>
       <b-table :bordered="false"
                :narrowed="narrowRecords"
@@ -89,50 +109,40 @@
 
           <b-table-column label="售價"
                           numeric>
-            <template v-if="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))">
-              {{ props.row.unitPrice|currency }}
-            </template>
-            <template v-else>
-              <template v-if="props.row._unitPrice!==null">
-                <a class="button is-warning is-small"
-                   @click="unitPricePrompt(props.row)">
-                  {{ props.row._unitPrice|currency }}
-                </a>
-                <a class="button is-success is-small"
-                   @click="processUnitPriceUpdate(props.row, null)">
-                  原始: {{ props.row.unitPrice|currency }}
-                </a>
-              </template>
-              <a v-else
-                 class="button is-success is-small"
+            <template v-if="props.row._unitPrice!==null">
+              <a class="button is-warning is-small"
                  @click="unitPricePrompt(props.row)">
-                {{ props.row.unitPrice|currency }}
+                {{ props.row._unitPrice|currency }}
+              </a>
+              <a class="button is-success is-small"
+                 @click="processUnitPriceUpdate(props.row, null)">
+                原始: {{ props.row.unitPrice|currency }}
               </a>
             </template>
+            <a v-else
+               class="button is-success is-small"
+               @click="unitPricePrompt(props.row)">
+              {{ props.row.unitPrice|currency }}
+            </a>
           </b-table-column>
 
           <b-table-column label="數量"
                           numeric>
-            <template v-if="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))">
-              {{ props.row.quantity|quantity }}
-            </template>
-            <template v-else>
-              <template v-if="props.row._quantity!==null">
-                <a class="button is-warning is-small"
-                   @click="quantityPrompt(props.row)">
-                  {{ props.row._quantity|quantity }}
-                </a>
-                <a class="button is-success is-small"
-                   @click="processQuantityUpdate(props.row, null)">
-                  原始: {{ props.row.quantity|quantity }}
-                </a>
-              </template>
-              <a v-else
-                 class="button is-success is-small"
+            <template v-if="props.row._quantity!==null">
+              <a class="button is-warning is-small"
                  @click="quantityPrompt(props.row)">
-                {{ props.row.quantity|quantity }}
+                {{ props.row._quantity|quantity }}
+              </a>
+              <a class="button is-success is-small"
+                 @click="processQuantityUpdate(props.row, null)">
+                原始: {{ props.row.quantity|quantity }}
               </a>
             </template>
+            <a v-else
+               class="button is-success is-small"
+               @click="quantityPrompt(props.row)">
+              {{ props.row.quantity|quantity }}
+            </a>
           </b-table-column>
 
           <b-table-column label="單位"
@@ -232,6 +242,18 @@ export default {
           ? entry.productId === this.productFilter
           : true
       })
+    },
+    actualSum () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return prevEntry + (currentEntry.unitPrice * currentEntry.quantity)
+      }, 0)
+    },
+    workingDataSum () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return currentEntry._preserved
+          ? prevEntry + (currentEntry.unitPrice * currentEntry.quantity)
+          : prevEntry + 0
+      }, 0)
     },
     isEmpty () { return this.totalRecords === 0 },
   },
