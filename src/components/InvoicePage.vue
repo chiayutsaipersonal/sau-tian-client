@@ -13,7 +13,7 @@
           <b-taglist attached>
             <b-tag type="is-success is-large">操作資料總額</b-tag>
             <b-tag type="is-info is-large"
-                   :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingSum}">
+                   :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingDataSum}">
               {{ workingDataSum|currency }}
             </b-tag>
           </b-taglist>
