@@ -58,15 +58,19 @@ const invoices = {
   },
   mutations: {
     clearData: state => { state.data = [] },
-    update: (state, dataForUpdate) => {
+    update: (state, payload) => {
       let index = state.data.findIndex(entry => {
-        return entry.customSalesDataId === dataForUpdate.id
+        return entry.customSalesDataId === payload.id
       })
-      state.data[index]._clientId = dataForUpdate._clientId
-      state.data[index]._employeeId = dataForUpdate._employeeId
-      state.data[index]._preserved = dataForUpdate._preserved
-      state.data[index]._quantity = dataForUpdate._quantity
-      state.data[index]._unitPrice = dataForUpdate._unitPrice
+      let a = state.data[index]
+      a._clientId = payload._clientId
+      a._employeeId = payload._employeeId
+      a._preserved = payload._preserved
+      a._quantity = payload._quantity
+      a._unitPrice = payload._unitPrice
+      a.checkboxDisabled = (a.areaId !== null) && ((a.areaId >= 1) && (a.areaId <= 4))
+        ? true
+        : a._clientId === null
     },
     register: (state, payload) => {
       payload.data.forEach((entry, index) => {
@@ -84,6 +88,9 @@ const invoices = {
         } else {
           state.data[index]._preserved = entry._preserved === 1
         }
+        entry.checkboxDisabled = (entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))
+          ? true
+          : entry._clientId === null
       })
       if (payload.pagination) {
         state.totalRecords = payload.pagination.totalRecords

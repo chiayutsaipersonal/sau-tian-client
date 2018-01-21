@@ -33,7 +33,7 @@
           <b-table-column label="輸出"
                           centered>
             <b-checkbox :value="props.row._preserved"
-                        :disabled="((props.row.areaId!==null)&&((props.row.areaId>=1)&&(props.row.areaId<=4)))"
+                        :disabled="props.row.checkboxDisabled"
                         @input="processPreservationUpdate(props.row, $event)" />
           </b-table-column>
 
@@ -336,7 +336,7 @@ export default {
       this.$store
         .dispatch(
           'invoices/upsert',
-          Object.assign({}, recordBeforeUpdate, { _clientId: _clientId })
+          Object.assign({}, recordBeforeUpdate, { _clientId: _clientId, _preserved: null })
         )
         .catch(error => {
           console.log(error)
