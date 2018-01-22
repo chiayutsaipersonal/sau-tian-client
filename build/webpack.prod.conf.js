@@ -68,7 +68,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         content: 'width=device-width, initial-scale=1'
       },
       links: ['https://use.fontawesome.com/releases/v5.0.2/css/all.css'],
-      headHtmlSnippet: '<link href="/favicon.ico" rel="shortcut icon">',
       minify: {
         removeComments: true,
         collapseWhitespace: false,
