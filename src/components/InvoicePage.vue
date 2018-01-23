@@ -201,7 +201,7 @@
 
 <script>
 import numeral from 'numeral'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
@@ -257,55 +257,44 @@ export default {
     this.$store.commit('invoices/reset')
   },
   methods: {
+    ...mapActions('clients', { getClientList: 'getClientsList' }),
+    ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
+    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
     clientLookup (clientId) {
       if (this.clientList) {
-        let result = this.clientList.filter(client => {
-          return client.id === clientId
-        })
+        let result = this.clientList.filter(client => client.id === clientId)
         if (result.length === 1) {
           return result[0]
         } else {
-          return {
-            id: '錯誤',
-            areaId: '錯誤',
-            name: '錯誤',
-          }
+          return { id: '錯誤', areaId: '錯誤', name: '錯誤' }
         }
       }
     },
+    errorIndicator (message) {
+      return this.$toast.open({
+        duration: 1000,
+        message: message,
+        position: 'is-top',
+        type: 'is-danger',
+        queue: false,
+      })
+    },
     getLiveData () {
-      this.$store.commit('invoices/setProductFilter', null)
-      return this.$store
-        .dispatch('clients/getClientList')
+      this.setProductFilter(null)
+      return this.getClientList()
         .then(clientList => {
           this.clientList = clientList
           return Promise.resolve()
-        })
-        .catch(error => {
-          this.$toast.open({
-            duration: 1000,
-            message: '客戶資料表讀取異常',
-            position: 'is-top',
-            type: 'is-danger',
-            queue: false,
-          })
+        }).catch(error => {
+          this.errorIndicator('客戶資料表讀取異常')
           return Promise.reject(error)
-        })
-        .then(() => {
-          return this.$store
-            .dispatch('invoices/fetch')
+        }).then(() => {
+          return this.fetchInvoiceData()
             .catch(error => {
-              this.$toast.open({
-                duration: 1000,
-                message: '銷售資料表讀取異常',
-                position: 'is-top',
-                type: 'is-danger',
-                queue: false,
-              })
+              this.errorIndicator('銷售資料表讀取異常')
               return Promise.reject(error)
             })
-        })
-        .catch(error => {
+        }).catch(error => {
           console.log(error)
           return this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
         })
