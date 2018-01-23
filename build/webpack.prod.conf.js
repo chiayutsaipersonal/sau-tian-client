@@ -70,7 +70,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       links: ['https://use.fontawesome.com/releases/v5.0.2/css/all.css'],
       minify: {
         removeComments: true,
-        collapseWhitespace: false,
+        collapseWhitespace: true,
         removeAttributeQuotes: false,
         preserveLineBreaks: true,
         // more options:
