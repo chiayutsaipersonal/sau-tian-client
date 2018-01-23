@@ -33,6 +33,19 @@ const store = new Vuex.Store({
         return Promise.reject(error)
       })
     },
+    generateReport: context => {
+      context.commit('startLoading')
+      return axios({
+        method: 'get',
+        url: `/sauTian/api/generateReport?startDate=${context.state.startDate}&endDate=${context.state.endDate}`,
+      }).then(() => {
+        context.commit('endLoading')
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('endLoading')
+        return Promise.reject(error)
+      })
+    },
   },
   mutations: {
     setStartDate: (state, startDate) => { state.startDate = startDate || null },

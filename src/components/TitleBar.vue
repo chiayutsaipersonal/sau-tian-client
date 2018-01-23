@@ -27,7 +27,7 @@
       </div>
       <div class="level-item">
         <button class="button is-medium is-info"
-                disabled>
+                @click="confirmReportGeneration">
           輸出報告
         </button>
       </div>
@@ -99,6 +99,7 @@ export default {
   methods: {
     ...mapActions('clients', { getClientList: 'getClientList' }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
+    ...mapActions({ generateReport: 'generateReport' }),
     ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
     getLiveData () {
       this.setProductFilter(null)
@@ -160,6 +161,46 @@ export default {
           return error.response.status === 503
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('POS 系統資料讀取失敗')
+        })
+    },
+    confirmReportGeneration () {
+      this.$dialog.confirm({
+        message: `是否開始輸出 '${this.startDate}' ~ '${this.endDate}' 區間的銷售資料報告？`,
+        type: 'is-info',
+        hasIcon: true,
+        icon: 'question-circle',
+        iconPack: 'fa',
+        onConfirm: () => this.reportGeneration(),
+      })
+    },
+    reportGeneration () {
+      this.switchRoute('sauTian')
+      this.$toast.open({
+        duration: 5000,
+        message: '報表輸出作業即將開始，請耐心等候...',
+        position: 'is-top',
+        type: 'is-info',
+        queue: false,
+      })
+      this.generateReport()
+        .then(() => {
+          this.$toast.open({
+            duration: 3000,
+            message: '報表輸出作業完成 \\\\(^.^ )//',
+            position: 'is-top',
+            type: 'is-info',
+            queue: false,
+          })
+        })
+        .catch(error => {
+          if (error.response) {
+            console.log(error.response.status)
+            console.log(error.response.data)
+            console.log(error.response.header)
+          }
+          return error.response.status === 503
+            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            : this.displayErrorDialog('報表輸出作業失敗 (o.O |||)')
         })
     },
   },
