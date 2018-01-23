@@ -43,14 +43,17 @@
 
 <script>
 import moment from 'moment-timezone'
+import { mapActions, mapMutations } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
+import errorIndicator from '../mixins/errorIndicator'
 import switchRoute from '../mixins/switchRoute'
 
 export default {
   name: 'TitleBar',
   mixins: [
     displayErrorDialog,
+    errorIndicator,
     switchRoute,
   ],
   data () {
@@ -74,14 +77,59 @@ export default {
     endDate () { return moment(new Date(`${this.year}-${this.endMonth}-01`)).endOf('month').format('YYYY-MM-DD') },
   },
   watch: {
-    startDate () { this.$store.commit('setStartDate', this.startDate) },
-    endDate () { this.$store.commit('setEndDate', this.endDate) },
+    year () {
+      this.$store.commit('setStartDate', this.startDate)
+      this.$store.commit('setEndDate', this.endDate)
+      if (this.$route.name === 'invoices') {
+        this.confirmLoadInvoiceData()
+      }
+    },
+    selectedPeriod () {
+      this.$store.commit('setStartDate', this.startDate)
+      this.$store.commit('setEndDate', this.endDate)
+      if (this.$route.name === 'invoices') {
+        this.confirmLoadInvoiceData()
+      }
+    },
   },
   mounted () {
     this.year = moment(new Date()).format('YYYY')
     this.selectedPeriod = Math.floor(parseInt(moment(new Date()).format('M')) / 2)
   },
   methods: {
+    ...mapActions('clients', { getClientList: 'getClientList' }),
+    ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
+    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
+    getLiveData () {
+      this.setProductFilter(null)
+      return this.getClientList()
+        .then(clientList => {
+          this.clientList = clientList
+          return Promise.resolve()
+        }).catch(error => {
+          this.errorIndicator('客戶資料表讀取異常')
+          return Promise.reject(error)
+        }).then(() => {
+          return this.fetchInvoiceData()
+            .catch(error => {
+              this.errorIndicator('銷售資料表讀取異常')
+              return Promise.reject(error)
+            })
+        }).catch(error => {
+          console.log(error)
+          return this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
+        })
+    },
+    confirmLoadInvoiceData () {
+      this.$dialog.confirm({
+        message: '是否重新讀取銷售資料？',
+        type: 'is-info',
+        hasIcon: true,
+        icon: 'question-circle',
+        iconPack: 'fa',
+        onConfirm: () => this.getLiveData(),
+      })
+    },
     confirmReload () {
       this.$dialog.confirm({
         message: '<strong>程式將重新讀取最新 POS 資料，<br>請避免在讀取作業結束之前同時操作 POS 系統</strong>',

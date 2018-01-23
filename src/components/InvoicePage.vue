@@ -204,6 +204,7 @@ import numeral from 'numeral'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
+import errorIndicator from '../mixins/errorIndicator'
 
 export default {
   name: 'InvoicePage',
@@ -217,7 +218,10 @@ export default {
       return numeral(value).format('0,0[.]00')
     },
   },
-  mixins: [displayErrorDialog],
+  mixins: [
+    displayErrorDialog,
+    errorIndicator,
+  ],
   data () {
     return { clientList: null }
   },
@@ -257,7 +261,7 @@ export default {
     this.$store.commit('invoices/reset')
   },
   methods: {
-    ...mapActions('clients', { getClientList: 'getClientsList' }),
+    ...mapActions('clients', { getClientList: 'getClientList' }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
     ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
     clientLookup (clientId) {
@@ -269,15 +273,6 @@ export default {
           return { id: '錯誤', areaId: '錯誤', name: '錯誤' }
         }
       }
-    },
-    errorIndicator (message) {
-      return this.$toast.open({
-        duration: 1000,
-        message: message,
-        position: 'is-top',
-        type: 'is-danger',
-        queue: false,
-      })
     },
     getLiveData () {
       this.setProductFilter(null)
