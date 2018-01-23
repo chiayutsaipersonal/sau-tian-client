@@ -139,6 +139,24 @@ const invoices = {
     isLoading: state => state.loading,
     isUpdating: state => state.updating,
     uniqueProducts: state => [...new Set(state.data.map(item => item.productId))],
+    filteredData: state => {
+      let workingData = state.data.filter(entry => state.productFilter === null ? true : entry.productId === state.productFilter)
+      for (let counter = 0; counter < workingData.length; counter++) {
+        let entry = workingData[counter]
+        if (entry._preserved) {
+          // calculate inv value from working attributes if existed
+          let unitPrice = entry._unitPrice !== null ? entry._unitPrice : entry.unitPrice
+          let quantity = entry._quantity !== null ? entry._quantity : entry.quantity
+          workingData[counter].workingInvoiceValue = unitPrice * quantity
+          // calculate actual inv value
+          workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+        } else {
+          workingData[counter].workingInvoiceValue = 0
+          workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+        }
+      }
+      return workingData
+    },
   },
   state: {
     loading: false,

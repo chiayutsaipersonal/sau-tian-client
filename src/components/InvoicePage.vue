@@ -152,7 +152,7 @@
 
           <b-table-column label="總額"
                           numeric>
-            {{ ((props.row._unitPrice||props.row.unitPrice)*(props.row._quantity||props.row.quantity))|currency }}
+            {{ props.row.workingInvoiceValue|currency }}
           </b-table-column>
         </template>
 
@@ -201,7 +201,7 @@
 
 <script>
 import numeral from 'numeral'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
 
@@ -236,23 +236,15 @@ export default {
       endDate: 'endDate',
       narrowRecords: 'narrowRecords',
     }),
-    filteredData () {
-      return this.data.filter(entry => {
-        return this.productFilter
-          ? entry.productId === this.productFilter
-          : true
-      })
-    },
+    ...mapGetters('invoices', { filteredData: 'filteredData' }),
     actualSum () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return prevEntry + (currentEntry.unitPrice * currentEntry.quantity)
+        return prevEntry + (currentEntry.actualInvoiceValue)
       }, 0)
     },
     workingDataSum () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return currentEntry._preserved
-          ? prevEntry + (currentEntry.unitPrice * currentEntry.quantity)
-          : prevEntry + 0
+        return prevEntry + (currentEntry.workingInvoiceValue)
       }, 0)
     },
     isEmpty () { return this.totalRecords === 0 },
