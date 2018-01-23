@@ -1,25 +1,25 @@
 <template>
   <aside id="navigation-menu">
     <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-active':$route.name==='home'}"
+            :class="{'is-focused':$route.name==='home'}"
             @click="switchRoute('/sauTian')">
       操作說明
     </button>
 
     <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-active':$route.name==='clients'}"
+            :class="{'is-focused':$route.name==='clients'}"
             @click="switchRoute('/sauTian/clients')">
       客戶列表
     </button>
 
     <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-active':$route.name==='products'}"
+            :class="{'is-focused':$route.name==='products'}"
             @click="switchRoute('/sauTian/products')">
       產品列表
     </button>
 
     <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-active':$route.name==='invoices'}"
+            :class="{'is-focused':$route.name==='invoices'}"
             @click="switchRoute('/sauTian/invoices')">
       銷售資料
     </button>
