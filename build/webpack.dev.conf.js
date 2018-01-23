@@ -93,7 +93,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       },
     }),
     new HtmlWebpackHarddiskPlugin({
-      outputPath: 'dist/public'
+      outputPath: 'dist'
     }),
   ]
 })
