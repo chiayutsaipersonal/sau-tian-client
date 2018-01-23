@@ -81,6 +81,7 @@ export default {
       startDate: 'startDate',
       endDate: 'endDate',
     }),
+    ...mapState('invoices', { productFilter: 'productFilter' }),
     totalRecords () {
       if (this.$route.name === 'home') return null
       return this.$store.state[this.$route.name].totalRecords
@@ -92,16 +93,19 @@ export default {
       viewWideRecords: 'viewWideRecords',
     }),
     deleteCustomSalesRecord () {
+      let message = this.productFilter === null
+        ? `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間的客製銷售資料，請【確認】或【取消】！！！`
+        : `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間並且相關產品 ID: '${this.productFilter}'的客製銷售資料，請【確認】或【取消】！！！`
       this.$dialog.confirm({
-        message: `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間的客製銷售資料<br>請確認！！！`,
+        message,
         onConfirm: () => {
           this.switchRoute('/sauTian')
           this.$store
-            .dispatch('invoices/delete')
+            .dispatch('invoices/delete', this.productFilter)
             .then(() => this.$dialog.alert('客製銷售資料清除完畢'))
             .catch(error => {
               console.error(error)
-              return this.displayErrorDialog('產品轉換率批次上傳成功')
+              return this.displayErrorDialog('客製銷售資料清除作業失敗')
             })
         },
       })

@@ -156,8 +156,10 @@ export default {
           })
         })
         .catch(error => {
-          console.log(error)
-          return this.displayErrorDialog('POS 系統資料讀取失敗')
+          if (error.response) console.error(error.response.data)
+          return error.response.status === 503
+            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            : this.displayErrorDialog('POS 系統資料讀取失敗')
         })
     },
   },

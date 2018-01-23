@@ -2,7 +2,7 @@ export default {
   methods: {
     errorIndicator (message) {
       return this.$toast.open({
-        duration: 1000,
+        duration: 3000,
         message: message,
         position: 'is-top',
         type: 'is-danger',

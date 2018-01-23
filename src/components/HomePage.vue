@@ -1,10 +1,13 @@
 <template>
   <div id="home-page">
-    <h3 class="title is-3">系統操作說明 (待完成)</h3>
+    <h3 class="title is-3">系統操作說明 (尚未完成)</h3>
     <hr>
     <ol>
       <li>
         <div class="has-text-left">
+          <div class="subtitle is-5">
+            <strong>程式版面介紹：</strong>
+          </div>
           <p>
             程式適合以 FULL HD (1920 * 1080) 螢幕解析度之模式下操作，最小於 HD (1366 * 768) 解析度操作亦可。<br> 請將滑鼠移至於各版面名稱上獲取敘述
           </p>
@@ -55,18 +58,26 @@
         </div>
       </li>
       <li class="has-text-left">
+        <div class="subtitle is-5">
+          <strong>功能模組：</strong>
+        </div>
         <p>
-          <strong>功能模組：</strong> 程式主要由您目前正在閱讀的基本
+          程式主要由您目前正在閱讀的基本
           <strong class="button is-info is-outlined is-small">操作說明</strong> 、
           <strong class="button is-info is-outlined is-small">客戶列表</strong> 、
           <strong class="button is-info is-outlined is-small">產品列表</strong> 、以及
         <strong class="button is-info is-outlined is-small">銷售資料</strong> 四個操作頁面所組成。程式可以讓使用者陸續編輯、儲存並輸出銷售資料。所有作業不會對實際的 POS 系統資料造成任何影響。</p>
         <ul>
           <li>
-            <strong>系統操作說明:</strong> 簡易系統操作以及功能解說
+            <div class="subtitle is-6">
+              <strong>系統操作說明</strong>
+            </div>
+            <div>簡易系統操作以及功能解說</div>
           </li>
           <li>
-            <strong>客戶列表檢視</strong>
+            <div class="subtitle is-6">
+              <strong>客戶列表檢視</strong>
+            </div>
             <ul>
               <li>
                 主要用於檢視
@@ -90,10 +101,6 @@
                   將資料加以分頁，方便瀏覽。
                 </div>
                 <br>
-                <strong class="button is-info is-outlined is-small">
-                  分頁檢視控制
-                </strong>
-                <br>
                 <img src="../../static/paginationControlImage.png">
               </li>
               <li>
@@ -110,10 +117,14 @@
             </ul>
           </li>
           <li>
-            <strong>產品列表檢視</strong>
+            <div class="subtitle is-6">
+              <strong>產品列表檢視</strong>
+            </div>
           </li>
           <li>
-            <strong>銷售資料編輯</strong>
+            <div class="subtitle is-6">
+              <strong>銷售資料編輯</strong>
+            </div>
           </li>
         </ul>
       </li>
@@ -182,6 +193,11 @@ li {
 
 .mockup-pane {
   border: 2px solid gray;
+  border-radius: 5px;
+}
+
+img {
+  border: 3px solid gray;
   border-radius: 5px;
 }
 </style>

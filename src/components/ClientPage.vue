@@ -137,10 +137,14 @@
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
+import errorIndicator from '../mixins/errorIndicator'
 
 export default {
   name: 'ClientPage',
-  mixins: [displayErrorDialog],
+  mixins: [
+    displayErrorDialog,
+    errorIndicator,
+  ],
   computed: {
     ...mapState({
       loading: 'loading',
@@ -169,8 +173,10 @@ export default {
           currentPage: this.currentPage,
         })
         .catch(error => {
-          console.error(error)
-          return this.displayErrorDialog('客戶資料表讀取異常')
+          if (error.response) console.error(error.response.data)
+          return error.response.status === 503
+            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            : this.displayErrorDialog('客戶資料表讀取異常')
         })
     }
   },

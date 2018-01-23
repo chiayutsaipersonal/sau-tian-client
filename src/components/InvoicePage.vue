@@ -1,25 +1,5 @@
 <template>
   <div id="invoice-page">
-    <section v-if="!isEmpty">
-      <b-field grouped
-               group-multiline>
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-success is-large">實際 POS 總額</b-tag>
-            <b-tag type="is-info is-large"> {{ actualSum|currency }} </b-tag>
-          </b-taglist>
-        </div>
-        <div class="control">
-          <b-taglist attached>
-            <b-tag type="is-success is-large">操作資料總額</b-tag>
-            <b-tag type="is-info is-large"
-                   :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingDataSum}">
-              {{ workingDataSum|currency }}
-            </b-tag>
-          </b-taglist>
-        </div>
-      </b-field>
-    </section>
     <section>
       <b-table :bordered="false"
                :narrowed="narrowRecords"
@@ -290,8 +270,10 @@ export default {
               return Promise.reject(error)
             })
         }).catch(error => {
-          console.log(error)
-          return this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
+          if (error.response) console.error(error.response.data)
+          return error.response.status === 503
+            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            : this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
         })
     },
     markUnpreservedRecord (row, index) {

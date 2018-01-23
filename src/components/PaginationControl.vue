@@ -2,22 +2,42 @@
   <div id="pagination-control"
        class="level">
     <div v-if="$route.name==='invoices'"
-         class="left-left">
+         class="level-left">
       <div class="level-item">
-        <template v-if="uniqueProducts.length>0">
-          <b-select v-model="localProductFilter"
-                    size="is-medium"
-                    placeholder="顯示所有產品"
-                    :disabled="$route.name!=='invoices'"
-                    @input="setProductFilter($event)">
-            <option :value="null">顯示所有產品</option>
-            <option v-for="productId in uniqueProducts"
-                    :value="productId"
-                    :key="productId">
-              僅顯示 {{ productId }}
-            </option>
-          </b-select>
-        </template>
+        <b-select v-if="uniqueProducts.length>0"
+                  v-model="localProductFilter"
+                  size="is-medium"
+                  placeholder="顯示所有產品"
+                  :disabled="$route.name!=='invoices'"
+                  @input="setProductFilter($event)">
+          <option :value="null">顯示所有產品</option>
+          <option v-for="productId in uniqueProducts"
+                  :value="productId"
+                  :key="productId">
+            僅顯示 {{ productId }}
+          </option>
+        </b-select>
+      </div>
+      <div v-if="filteredData.length>0"
+           class="level-item">
+        <b-field grouped
+                 group-multiline>
+          <div class="control">
+            <b-taglist attached>
+              <b-tag type="is-success is-large">實際 POS 總額</b-tag>
+              <b-tag type="is-info is-large"> {{ actualSum|currency }} </b-tag>
+            </b-taglist>
+          </div>
+          <div class="control">
+            <b-taglist attached>
+              <b-tag type="is-success is-large">操作資料總額</b-tag>
+              <b-tag type="is-info is-large"
+                     :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingDataSum}">
+                {{ workingDataSum|currency }}
+              </b-tag>
+            </b-taglist>
+          </div>
+        </b-field>
       </div>
     </div>
     <div v-else
@@ -98,6 +118,7 @@
 </template>
 
 <script>
+import numeral from 'numeral'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
@@ -105,6 +126,12 @@ import viewLabel from '../mixins/viewLabel'
 
 export default {
   name: 'PaginationControl',
+  filters: {
+    currency (value) {
+      if (value === null) return null
+      return numeral(value).format('$ 0,0[.]00')
+    },
+  },
   mixins: [displayErrorDialog, viewLabel],
   data () {
     return {
@@ -114,8 +141,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('invoices', { uniqueProducts: 'uniqueProducts' }),
+    ...mapGetters('invoices', {
+      filteredData: 'filteredData',
+      uniqueProducts: 'uniqueProducts',
+    }),
     ...mapState('invoices', { productFilter: 'productFilter' }),
+    actualSum () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return prevEntry + (currentEntry.actualInvoiceValue)
+      }, 0)
+    },
+    workingDataSum () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return prevEntry + (currentEntry.workingInvoiceValue)
+      }, 0)
+    },
     totalRecords () { return this.$store.state[this.$route.name].totalRecords },
     perPage () { return this.$store.state[this.$route.name].perPage },
     totalPages () { return this.$store.state[this.$route.name].totalPages },

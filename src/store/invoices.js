@@ -39,9 +39,11 @@ const invoices = {
         return Promise.reject(error)
       })
     },
-    delete: context => {
+    delete: (context, productId = null) => {
       context.commit('clearData')
-      let url = `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
+      let url = productId === null
+        ? `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
+        : `/sauTian/api/invoices/products/${productId}?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
       context.commit('startLoading', null, { root: true })
       return axios({
         method: 'delete',

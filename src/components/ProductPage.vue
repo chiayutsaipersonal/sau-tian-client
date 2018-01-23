@@ -121,11 +121,15 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 import ProductEditPane from './ProductEditPane'
 
 import displayErrorDialog from '../mixins/displayErrorDialog'
+import errorIndicator from '../mixins/errorIndicator'
 
 export default {
   name: 'ProductPage',
   components: { ProductEditPane },
-  mixins: [displayErrorDialog],
+  mixins: [
+    displayErrorDialog,
+    errorIndicator,
+  ],
   data () {
     return {
       editPaneInView: [],
@@ -159,15 +163,10 @@ export default {
           currentPage: this.currentPage,
         })
         .catch(error => {
-          console.error(error)
-          return this.$dialog.alert({
-            title: '錯誤',
-            message: '產品資料表讀取異常',
-            type: 'is-danger',
-            hasIcon: true,
-            icon: 'times-circle',
-            iconPack: 'fa',
-          })
+          if (error.response) console.error(error.response.data)
+          return error.response.status === 503
+            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            : this.displayErrorDialog('產品資料表讀取異常')
         })
     }
   },
