@@ -3,13 +3,7 @@
     <button class="button is-info is-outlined is-fullwidth is-medium"
             :class="{'is-active':$route.name==='home'}"
             @click="switchRoute('/sauTian')">
-      系統首頁
-    </button>
-
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-active':$route.name==='invoices'}"
-            @click="switchRoute('/sauTian/invoices')">
-      銷售資料
+      操作說明
     </button>
 
     <button class="button is-info is-outlined is-fullwidth is-medium"
@@ -22,6 +16,12 @@
             :class="{'is-active':$route.name==='products'}"
             @click="switchRoute('/sauTian/products')">
       產品列表
+    </button>
+
+    <button class="button is-info is-outlined is-fullwidth is-medium"
+            :class="{'is-active':$route.name==='invoices'}"
+            @click="switchRoute('/sauTian/invoices')">
+      銷售資料
     </button>
 
     <br>
