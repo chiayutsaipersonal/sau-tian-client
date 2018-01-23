@@ -8,9 +8,12 @@
           <div class="subtitle is-5">
             <strong>程式版面介紹：</strong>
           </div>
-          <p>
-            程式適合以 FULL HD (1920 * 1080) 螢幕解析度之模式下操作，最小於 HD (1366 * 768) 解析度操作亦可。<br> 請將滑鼠移至於各版面名稱上獲取敘述
-          </p>
+          <ol>
+            <li>程式適合以 FULL HD (1920 * 1080) 螢幕解析度之模式下操作</li>
+            <li>最小於 HD (1366 * 768) 解析度操作亦可</li>
+            <li>請使用 Chrome 網路瀏覽器操作</li>
+            <li>請將滑鼠移至於各版面名稱上獲取敘述</li>
+          </ol>
         </div>
         <div id="layout-mockup">
           <div id="mockup-header"
