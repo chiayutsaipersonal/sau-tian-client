@@ -1,8 +1,24 @@
 <template>
   <div id="home-page">
-    <h3 class="title is-3">系統操作說明</h3>
+    <h3 class="title is-3">系統操作說明 (待完成)</h3>
     <hr>
-    <p>未完成</p>
+    <ol>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+      <li class="has-text-left">系統操作步驟</li>
+    </ol>
   </div>
 </template>
 
@@ -16,6 +32,4 @@ export default {
 }
 </script>
 
-<style scope>
-
-</style>
+<style scope></style>
