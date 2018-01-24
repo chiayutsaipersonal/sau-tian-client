@@ -1,7 +1,9 @@
 import axios from 'axios'
+import FileSaver from 'file-saver'
 import moment from 'moment-timezone'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Promise from 'bluebird'
 
 import clients from './clients'
 import invoices from './invoices'
@@ -40,11 +42,27 @@ const store = new Vuex.Store({
         url: `/sauTian/api/generateReport?startDate=${context.state.startDate}&endDate=${context.state.endDate}`,
       }).then(() => {
         context.commit('endLoading')
-        return Promise.resolve()
+        return Promise.each([
+          context.dispatch('fetchReport', '2702_cust.txt'),
+          context.dispatch('fetchReport', '2702_sku.txt'),
+          context.dispatch('fetchReport', '2702_sale.txt'),
+        ], () => {
+          return Promise.resolve()
+        })
       }).catch(error => {
         context.commit('endLoading')
         return Promise.reject(error)
       })
+    },
+    fetchReport: (context, reportName) => {
+      return axios({
+        method: 'get',
+        url: `/sauTian/reports/${reportName}`,
+      }).then(serverResponse => {
+        let file = new Blob([serverResponse.data], { type: 'text/plain' })
+        FileSaver.saveAs(file, reportName)
+        return Promise.resolve()
+      }).catch(error => Promise.reject(error))
     },
   },
   mutations: {

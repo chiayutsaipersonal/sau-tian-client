@@ -176,8 +176,8 @@ export default {
     reportGeneration () {
       this.switchRoute('sauTian')
       this.$toast.open({
-        duration: 5000,
-        message: '報表輸出作業即將開始，請耐心等候...',
+        duration: 1000,
+        message: '報表輸出作業即將開始，請稍候...',
         position: 'is-top',
         type: 'is-info',
         queue: false,
