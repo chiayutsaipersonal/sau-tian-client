@@ -163,8 +163,8 @@ export default {
           currentPage: this.currentPage,
         })
         .catch(error => {
-          if (error.response) console.error(error.response.data)
-          return error.response.status === 503
+          if (error.response) console.error(error.response)
+          return error.response.status && (error.response.status === 503)
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('產品資料表讀取異常')
         })

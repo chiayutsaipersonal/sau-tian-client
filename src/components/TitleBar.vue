@@ -13,11 +13,11 @@
                    placeholder="檢視年度"
                    v-model="year"
                    maxlength="4"
-                   size="is-medium" />
+                   size="is-small" />
           <b-select placeholder="Select a name"
                     v-model="selectedPeriod"
-                    size="is-medium">
-            <option v-for="(period, index) in periods"
+                    size="is-small">
+            <option v-for="(period, index) in periodLabels"
                     :value="index"
                     :key="index">
               {{ period }}
@@ -26,15 +26,15 @@
         </b-field>
       </div>
       <div class="level-item">
-        <button class="button is-medium is-info"
+        <button class="button is-small is-info"
                 @click="confirmReportGeneration">
           輸出報告
         </button>
       </div>
       <div class="level-item">
-        <button class="button is-medium is-danger"
+        <button class="button is-small is-danger"
                 @click="confirmReload">
-          重新載入 POS 系統資料
+          同步 POS 資料
         </button>
       </div>
     </div>
@@ -60,21 +60,26 @@ export default {
     return {
       year: null,
       selectedPeriod: 0,
-      periods: [
-        '1 ~ 2 月份',
-        '3 ~ 4 月份',
-        '5 ~ 6 月份',
-        '7 ~ 8 月份',
-        '9 ~ 10 月份',
-        '11 ~ 12 月份',
+      periodLabels: [
+        '1 月份',
+        '2 月份',
+        '3 月份',
+        '4 月份',
+        '5 月份',
+        '6 月份',
+        '7 月份',
+        '8 月份',
+        '9 月份',
+        '10 月份',
+        '11 月份',
+        '12 月份',
       ],
     }
   },
   computed: {
-    startMonth () { return (this.selectedPeriod * 2 + 1) },
-    endMonth () { return (this.startMonth + 1) },
-    startDate () { return moment(new Date(`${this.year}-${this.startMonth}-01`)).format('YYYY-MM-DD') },
-    endDate () { return moment(new Date(`${this.year}-${this.endMonth}-01`)).endOf('month').format('YYYY-MM-DD') },
+    selectedMonth () { return (this.selectedPeriod + 1) },
+    startDate () { return moment(new Date(`${this.year}-${this.selectedMonth}-01`)).format('YYYY-MM-DD') },
+    endDate () { return moment(new Date(this.startDate)).endOf('month').format('YYYY-MM-DD') },
   },
   watch: {
     year () {
@@ -93,14 +98,17 @@ export default {
     },
   },
   mounted () {
-    this.year = moment(new Date()).format('YYYY')
-    this.selectedPeriod = Math.floor(parseInt(moment(new Date()).format('M')) / 2)
+    this.resetComponentData()
   },
   methods: {
     ...mapActions('clients', { getClientList: 'getClientList' }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
     ...mapActions({ generateReport: 'generateReport' }),
     ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
+    resetComponentData () {
+      this.year = moment(new Date()).format('YYYY')
+      this.selectedPeriod = parseInt(moment(new Date()).format('M')) - 1
+    },
     getLiveData () {
       this.setProductFilter(null)
       return this.getClientList()
@@ -142,8 +150,7 @@ export default {
       })
     },
     reloadPosData () {
-      this.year = moment(new Date()).format('YYYY')
-      this.selectedPeriod = 0
+      this.resetComponentData()
       this.switchRoute('sauTian')
       this.$store
         .dispatch('reloadPosData')
@@ -157,8 +164,8 @@ export default {
           })
         })
         .catch(error => {
-          if (error.response) console.error(error.response.data)
-          return error.response.status === 503
+          if (error.response) console.error(error.response)
+          return error.response.status && (error.response.status === 503)
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('POS 系統資料讀取失敗')
         })
@@ -193,12 +200,8 @@ export default {
           })
         })
         .catch(error => {
-          if (error.response) {
-            console.log(error.response.status)
-            console.log(error.response.data)
-            console.log(error.response.header)
-          }
-          return error.response.status === 503
+          if (error.response) console.error(error.response)
+          return error.response.status && (error.response.status === 503)
             ? this.errorIndicator('系統未發現資料，請確認資料擷取區間是否正確。')
             : this.displayErrorDialog('報表輸出作業失敗 (o.O |||)')
         })

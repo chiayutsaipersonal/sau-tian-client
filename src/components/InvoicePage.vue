@@ -270,8 +270,8 @@ export default {
               return Promise.reject(error)
             })
         }).catch(error => {
-          if (error.response) console.error(error.response.data)
-          return error.response.status === 503
+          if (error.response) console.error(error.response)
+          return error.response.status && (error.response.status === 503)
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
         })
