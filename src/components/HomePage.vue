@@ -69,13 +69,13 @@
           <strong class="button is-info is-outlined is-small">操作說明</strong> 、
           <strong class="button is-info is-outlined is-small">客戶列表</strong> 、
           <strong class="button is-info is-outlined is-small">產品列表</strong> 、以及
-        <strong class="button is-info is-outlined is-small">銷售資料</strong> 四個操作頁面所組成。程式可以讓使用者陸續編輯、儲存並輸出銷售資料。所有作業不會對實際的 POS 系統資料造成任何影響。</p>
+          <strong class="button is-info is-outlined is-small">銷售資料</strong> 四個操作頁面所組成。程式可以讓使用者陸續編輯、儲存並輸出銷售資料。所有作業不會對實際的 POS 系統資料造成任何影響。
+        </p>
         <ul>
           <li>
             <div class="subtitle is-6">
-              <strong>系統操作說明</strong>
+              <strong>系統操作說明:</strong>&nbsp;簡易系統操作以及功能解說
             </div>
-            <div>簡易系統操作以及功能解說</div>
           </li>
           <li>
             <div class="subtitle is-6">
@@ -104,7 +104,7 @@
                   將資料加以分頁，方便瀏覽。
                 </div>
                 <br>
-                <img src="../../static/paginationControlImage.png">
+                <img src="../assets/paginationControlImage.png">
               </li>
               <li>
                 可點選
