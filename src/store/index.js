@@ -40,30 +40,29 @@ const store = new Vuex.Store({
       return axios({
         method: 'get',
         url: `/sauTian/api/generateReport?startDate=${context.state.startDate}&endDate=${context.state.endDate}`,
-      }).then(() => {
+        responseType: 'arraybuffer',
+      }).then(serverResponse => {
         context.commit('endLoading')
-        return Promise.each([
-          context.dispatch('fetchReport', '2702_cust.txt'),
-          context.dispatch('fetchReport', '2702_sku.txt'),
-          context.dispatch('fetchReport', '2702_sale.txt'),
-        ], () => {
-          return Promise.resolve()
-        })
+        let file = new Blob([serverResponse.data], { type: 'application/zip' })
+        FileSaver.saveAs(file, 'reports.zip')
+        return Promise.resolve()
+        // return context.dispatch('fetchReport', 'reports.zip')
       }).catch(error => {
         context.commit('endLoading')
         return Promise.reject(error)
       })
     },
-    fetchReport: (context, reportName) => {
-      return axios({
-        method: 'get',
-        url: `/sauTian/reports/${reportName}`,
-      }).then(serverResponse => {
-        let file = new Blob([serverResponse.data], { type: 'text/plain' })
-        FileSaver.saveAs(file, reportName)
-        return Promise.resolve()
-      }).catch(error => Promise.reject(error))
-    },
+    // fetchReport: (context, reportName) => {
+    //   return axios({
+    //     method: 'get',
+    //     url: `/sauTian/reports/${reportName}`,
+    //     responseType: 'arraybuffer',
+    //   }).then(serverResponse => {
+    //     let file = new Blob([serverResponse.data], { type: 'application/zip' })
+    //     FileSaver.saveAs(file, reportName)
+    //     return Promise.resolve()
+    //   }).catch(error => Promise.reject(error))
+    // },
   },
   mutations: {
     setStartDate: (state, startDate) => { state.startDate = startDate || null },

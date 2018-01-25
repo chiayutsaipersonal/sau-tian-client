@@ -199,7 +199,7 @@ export default {
             console.log(error.response.header)
           }
           return error.response.status === 503
-            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+            ? this.errorIndicator('系統未發現資料，請確認資料擷取區間是否正確。')
             : this.displayErrorDialog('報表輸出作業失敗 (o.O |||)')
         })
     },
