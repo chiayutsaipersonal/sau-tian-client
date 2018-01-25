@@ -41,6 +41,7 @@ const store = new Vuex.Store({
         method: 'get',
         url: `/sauTian/api/generateReport?startDate=${context.state.startDate}&endDate=${context.state.endDate}`,
         responseType: 'arraybuffer',
+        // responseType: 'blob', // also works
       }).then(serverResponse => {
         context.commit('endLoading')
         let file = new Blob([serverResponse.data], { type: 'application/zip' })
