@@ -1,12 +1,16 @@
 {
   "name": "sau-tian-client",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "A Vue.js project",
   "author": "chiayu.tsai.personal@gmail.com",
   "private": true,
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chiayutsaipersonal/sau-tian-client.git"
   },
   "browserslist": [
     "> 1%",
@@ -78,7 +82,7 @@
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "lint": "eslint --ext .js,.vue src",
+    "lint": "eslint --ext .js,.vue src --fix",
     "build": "node build/build.js"
   }
 }
