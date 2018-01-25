@@ -13,10 +13,10 @@
                    placeholder="檢視年度"
                    v-model="year"
                    maxlength="4"
-                   size="is-small" />
+                   size="is-medium" />
           <b-select placeholder="Select a name"
                     v-model="selectedPeriod"
-                    size="is-small">
+                    size="is-medium">
             <option v-for="(period, index) in periodLabels"
                     :value="index"
                     :key="index">
@@ -26,13 +26,13 @@
         </b-field>
       </div>
       <div class="level-item">
-        <button class="button is-small is-info"
+        <button class="button is-medium is-info"
                 @click="confirmReportGeneration">
           輸出報告
         </button>
       </div>
       <div class="level-item">
-        <button class="button is-small is-danger"
+        <button class="button is-medium is-danger"
                 @click="confirmReload">
           同步 POS 資料
         </button>

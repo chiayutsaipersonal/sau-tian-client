@@ -93,7 +93,7 @@
                 若有必要
                 <u>新增</u> 或
                 <u>移除</u> 列表中的客戶，必須在修正 POS 資料並執行
-                <strong class="button is-danger is-small">重新載入POS系統資料</strong> 或是重新啟動系統後端程式
+                <strong class="button is-danger is-small">同步 POS 資料</strong> 或是重新啟動系統後端程式
               </li>
               <li>
                 <div>
