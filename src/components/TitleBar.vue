@@ -3,7 +3,10 @@
        class="level">
     <div class="level-left">
       <div class="level-item">
-        <h3 class="title is-3">秀田銷售資料拋轉程式</h3>
+        <h3 class="title is-3">
+          秀田銷售資料編輯轉檔程式&nbsp;&nbsp;
+          <small>v 1.0.0</small>
+        </h3>
       </div>
     </div>
     <div class="level-right">
@@ -34,7 +37,7 @@
       <div class="level-item">
         <button class="button is-medium is-danger"
                 @click="confirmReload">
-          同步 POS 資料
+          同步銷售資料
         </button>
       </div>
     </div>
