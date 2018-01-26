@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HomePage from '@/components/HomePage'
-const HomePage = r => require.ensure([], () => (require('@/components/HomePage.vue')))
+import HomePage from '@/components/HomePage'
 // import InvoicePage from '@/components/InvoicePage'
 const InvoicePage = r => require.ensure([], () => (require('@/components/InvoicePage.vue')))
 // import ClientPage from '@/components/ClientPage'
