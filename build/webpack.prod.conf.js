@@ -60,6 +60,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       template: htmlWebpackTemplate,
       inject: false,
+      favicon: path.resolve(path.join(__dirname, '../static/favicon.ico')),
       appMountId: 'app',
       title: config.appTitle,
       lang: 'zh',
