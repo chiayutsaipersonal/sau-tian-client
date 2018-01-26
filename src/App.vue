@@ -18,12 +18,16 @@
 import { mapState } from 'vuex'
 
 import TitleBar from '@/components/TitleBar'
-import NavigationMenu from '@/components/NavigationMenu'
-import PaginationControl from '@/components/PaginationControl'
+// import NavigationMenu from '@/components/NavigationMenu'
+// import PaginationControl from '@/components/PaginationControl'
 
 export default {
   name: 'App',
-  components: { TitleBar, NavigationMenu, PaginationControl },
+  components: {
+    TitleBar,
+    NavigationMenu: () => import('./components/NavigationMenu.vue'),
+    PaginationControl: () => import('./components/PaginationControl.vue'),
+  },
   computed: {
     ...mapState({ loading: 'loading' }),
     activatePaginationControl: function () {

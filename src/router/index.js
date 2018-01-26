@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HomePage from '@/components/HomePage'
-import InvoicePage from '@/components/InvoicePage'
-import ClientPage from '@/components/ClientPage'
-import ProductPage from '@/components/ProductPage'
+// import HomePage from '@/components/HomePage'
+const HomePage = r => require.ensure([], () => (require('@/components/HomePage.vue')))
+// import InvoicePage from '@/components/InvoicePage'
+const InvoicePage = r => require.ensure([], () => (require('@/components/InvoicePage.vue')))
+// import ClientPage from '@/components/ClientPage'
+const ClientPage = r => require.ensure([], () => (require('@/components/ClientPage.vue')))
+// import ProductPage from '@/components/ProductPage'
+const ProductPage = r => require.ensure([], () => (require('@/components/ProductPage.vue')))
 
 Vue.use(Router)
 
