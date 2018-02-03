@@ -48,6 +48,11 @@
             {{ props.row.name }}
           </b-table-column>
 
+          <b-table-column label="進貨單價"
+                          numeric>
+            {{ props.row.asp|currency }}
+          </b-table-column>
+
           <b-table-column label="庫存數"
                           numeric>
             {{ props.row.stockQty }}
@@ -101,6 +106,9 @@
             <div class="th-wrap"> 品名 </div>
           </th>
           <th>
+            <div class="th-wrap is-numeric"> 進貨單價 </div>
+          </th>
+          <th>
             <div class="th-wrap is-numeric"> 庫存數 </div>
           </th>
           <th>
@@ -116,6 +124,7 @@
 </template>
 
 <script>
+import numeral from 'numeral'
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 import ProductEditPane from './ProductEditPane'
@@ -125,6 +134,16 @@ import errorIndicator from '../mixins/errorIndicator'
 
 export default {
   name: 'ProductPage',
+  filters: {
+    currency (value) {
+      if (value === null) return null
+      return numeral(value).format('$ 0,0[.]00')
+    },
+    quantity (value) {
+      if (value === null) return null
+      return numeral(value).format('0,0[.]00')
+    },
+  },
   components: { ProductEditPane },
   mixins: [
     displayErrorDialog,

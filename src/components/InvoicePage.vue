@@ -36,11 +36,12 @@
               <b-taglist v-if="props.row.areaId"
                          attached>
                 <b-tag type="is-success is-small">{{ props.row.areaId }}</b-tag>
+                <b-tag type="is-warning is-small">{{ props.row.clientId }}</b-tag>
                 <b-tag type="is-info is-small"> {{ props.row.companyName }} </b-tag>
               </b-taglist>
               <template v-else-if="props.row._clientId===null">
                 <b-select v-if="!props.row.areaId"
-                          :placeholder="props.row.companyName"
+                          :placeholder="`[${props.row.clientId}] ${props.row.companyName}`"
                           size="is-small"
                           @input="processClientUpdate(props.row, $event)">
                   <option v-for="client in clientList"
@@ -64,7 +65,10 @@
                     </b-taglist>
                   </div>
                   <div class="control">
-                    <b-tag type="is-white is-small">{{ props.row.companyName }}</b-tag>
+                    <b-taglist attached>
+                      <b-tag type="is-dark is-small">{{ props.row.clientId }}</b-tag>
+                      <b-tag type="is-white is-small">{{ props.row.companyName }}</b-tag>
+                    </b-taglist>
                   </div>
                 </b-field>
               </template>
