@@ -150,11 +150,14 @@ const invoices = {
           let unitPrice = entry._unitPrice !== null ? entry._unitPrice : entry.unitPrice
           let quantity = entry._quantity !== null ? entry._quantity : entry.quantity
           workingData[counter].workingInvoiceValue = unitPrice * quantity
-          // calculate actual inv value
+          workingData[counter].workingSalesQuantity = quantity
           workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+          workingData[counter].actualSalesQuantity = entry.quantity
         } else {
           workingData[counter].workingInvoiceValue = 0
+          workingData[counter].workingSalesQuantity = 0
           workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+          workingData[counter].actualSalesQuantity = entry.quantity
         }
       }
       return workingData

@@ -24,16 +24,37 @@
                  group-multiline>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-success is-large">實際 POS 總額</b-tag>
-              <b-tag type="is-info is-large"> {{ actualSum|currency }} </b-tag>
+              <b-tag type="is-success is-medium">實際銷售總額</b-tag>
+              <b-tag type="is-info is-medium"> {{ actualTotalSales|currency }} </b-tag>
             </b-taglist>
           </div>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-success is-large">操作資料總額</b-tag>
-              <b-tag type="is-info is-large"
-                     :class="{'is-info': actualSum===workingDataSum, 'is-danger':actualSum!==workingDataSum}">
-                {{ workingDataSum|currency }}
+              <b-tag type="is-success is-medium">操作銷售總額</b-tag>
+              <b-tag type="is-info is-medium"
+                     :class="{'is-info': actualTotalSales===workingTotalSales, 'is-danger':actualTotalSales!==workingTotalSales}">
+                {{ workingTotalSales|currency }}
+              </b-tag>
+            </b-taglist>
+          </div>
+        </b-field>
+      </div>
+      <div v-if="filteredData.length>0"
+           class="level-item">
+        <b-field grouped
+                 group-multiline>
+          <div class="control">
+            <b-taglist attached>
+              <b-tag type="is-black is-medium">實際銷售總量</b-tag>
+              <b-tag type="is-info is-medium"> {{ actualQuantitySoldTotal|quantity }} </b-tag>
+            </b-taglist>
+          </div>
+          <div class="control">
+            <b-taglist attached>
+              <b-tag type="is-black is-medium">操作銷售總量</b-tag>
+              <b-tag type="is-info is-medium"
+                     :class="{'is-info': actualQuantitySoldTotal===workingQuantitySoldTotal, 'is-danger':actualQuantitySoldTotal!==workingQuantitySoldTotal}">
+                {{ workingQuantitySoldTotal|quantity }}
               </b-tag>
             </b-taglist>
           </div>
@@ -131,6 +152,10 @@ export default {
       if (value === null) return null
       return numeral(value).format('$ 0,0[.]00')
     },
+    quantity (value) {
+      if (value === null) return null
+      return numeral(value).format('0,0[.]00')
+    },
   },
   mixins: [displayErrorDialog, viewLabel],
   data () {
@@ -146,14 +171,24 @@ export default {
       uniqueProducts: 'uniqueProducts',
     }),
     ...mapState('invoices', { productFilter: 'productFilter' }),
-    actualSum () {
+    actualTotalSales () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return prevEntry + (currentEntry.actualInvoiceValue)
+        return prevEntry + currentEntry.actualInvoiceValue
       }, 0)
     },
-    workingDataSum () {
+    workingTotalSales () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return prevEntry + (currentEntry.workingInvoiceValue)
+        return prevEntry + currentEntry.workingInvoiceValue
+      }, 0)
+    },
+    actualQuantitySoldTotal () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return prevEntry + currentEntry.actualSalesQuantity
+      }, 0)
+    },
+    workingQuantitySoldTotal () {
+      return this.filteredData.reduce((prevEntry, currentEntry) => {
+        return prevEntry + currentEntry.workingSalesQuantity
       }, 0)
     },
     totalRecords () { return this.$store.state[this.$route.name].totalRecords },

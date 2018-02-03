@@ -67,7 +67,7 @@
                   <div class="control">
                     <b-taglist attached>
                       <b-tag type="is-dark is-small">{{ props.row.clientId }}</b-tag>
-                      <b-tag type="is-white is-small">{{ props.row.companyName }}</b-tag>
+                      <b-tag type="is-small">{{ props.row.companyName }}</b-tag>
                     </b-taglist>
                   </div>
                 </b-field>
