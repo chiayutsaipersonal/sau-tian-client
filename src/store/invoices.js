@@ -129,12 +129,16 @@ const invoices = {
       state.next = null
       state.last = null
       state.productFilter = null
+      state.clientFilter = null
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
     },
-    setProductFilter: (state, filterProductId) => {
-      state.productFilter = filterProductId
+    setProductFilter: (state, productId) => {
+      state.productFilter = productId
+    },
+    setClientFilter: (state, clientId) => {
+      state.clientFilter = clientId
     },
   },
   getters: {
@@ -142,7 +146,16 @@ const invoices = {
     isUpdating: state => state.updating,
     uniqueProducts: state => [...new Set(state.data.map(item => item.productId))],
     filteredData: state => {
-      let workingData = state.data.filter(entry => state.productFilter === null ? true : entry.productId === state.productFilter)
+      let pf = state.productFilter
+      let cf = state.clientFilter
+      let workingData = state.data.filter(entry => {
+        let pFilterResult = entry.productId === state.productFilter
+        let cFilterResult = (entry._clientId || entry.clientId) === state.clientFilter
+        return ((pf === null) && (cf === null))
+          ? true : ((pf !== null) && (cf !== null))
+            ? pFilterResult && cFilterResult
+            : (pf !== null) ? pFilterResult : cFilterResult
+      })
       for (let counter = 0; counter < workingData.length; counter++) {
         let entry = workingData[counter]
         if (entry._preserved) {
@@ -161,6 +174,27 @@ const invoices = {
         }
       }
       return workingData
+      // let workingData = state.data.filter(entry => {
+      //   return state.productFilter === null ? true : entry.productId === state.productFilter
+      // })
+      // for (let counter = 0; counter < workingData.length; counter++) {
+      //   let entry = workingData[counter]
+      //   if (entry._preserved) {
+      //     // calculate inv value from working attributes if existed
+      //     let unitPrice = entry._unitPrice !== null ? entry._unitPrice : entry.unitPrice
+      //     let quantity = entry._quantity !== null ? entry._quantity : entry.quantity
+      //     workingData[counter].workingInvoiceValue = unitPrice * quantity
+      //     workingData[counter].workingSalesQuantity = quantity
+      //     workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+      //     workingData[counter].actualSalesQuantity = entry.quantity
+      //   } else {
+      //     workingData[counter].workingInvoiceValue = 0
+      //     workingData[counter].workingSalesQuantity = 0
+      //     workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+      //     workingData[counter].actualSalesQuantity = entry.quantity
+      //   }
+      // }
+      // return workingData
     },
   },
   state: {
@@ -177,6 +211,7 @@ const invoices = {
     next: null,
     last: null,
     productFilter: null,
+    clientFilter: null,
   },
 }
 

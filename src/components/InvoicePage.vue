@@ -206,9 +206,6 @@ export default {
     displayErrorDialog,
     errorIndicator,
   ],
-  data () {
-    return { clientList: null }
-  },
   computed: {
     ...mapState('invoices', {
       loading: 'loading',
@@ -217,7 +214,9 @@ export default {
       perPage: 'perPage',
       totalPages: 'totalPages',
       currentPage: 'currentPage',
-      productFilter: 'productFilter',
+    }),
+    ...mapState('clients', {
+      clientList: 'clientList',
     }),
     ...mapState({
       startDate: 'startDate',
@@ -245,9 +244,15 @@ export default {
     this.$store.commit('invoices/reset')
   },
   methods: {
-    ...mapActions('clients', { getClientList: 'getClientList' }),
+    ...mapActions('clients', {
+      getClientList: 'getClientList',
+      getPatronList: 'getPatronList',
+    }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
-    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
+    ...mapMutations('invoices', {
+      setClientFilter: 'setClientFilter',
+      setProductFilter: 'setProductFilter',
+    }),
     clientLookup (clientId) {
       if (this.clientList) {
         let result = this.clientList.filter(client => client.id === clientId)
@@ -259,10 +264,12 @@ export default {
       }
     },
     getLiveData () {
+      this.setClientFilter(null)
       this.setProductFilter(null)
       return this.getClientList()
         .then(clientList => {
-          this.clientList = clientList
+          return this.getPatronList()
+        }).then(patronList => {
           return Promise.resolve()
         }).catch(error => {
           this.errorIndicator('客戶資料表讀取異常')

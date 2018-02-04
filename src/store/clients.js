@@ -26,13 +26,27 @@ const clients = {
         method: 'get',
         url: '/sauTian/api/clients/simpleList',
       }).then(result => {
-        return Promise.resolve(result.data.data)
+        context.commit('registerClientList', result.data.data)
+        return Promise.resolve()
+      }).catch(error => {
+        return Promise.reject(error)
+      })
+    },
+    getPatronList: context => {
+      return axios({
+        method: 'get',
+        url: `/sauTian/api/clients/monthlyPatrons?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`,
+      }).then(result => {
+        context.commit('registerPatronList', result.data.data)
+        return Promise.resolve()
       }).catch(error => {
         return Promise.reject(error)
       })
     },
   },
   mutations: {
+    registerClientList: (state, clientList) => { state.clientList = clientList },
+    registerPatronList: (state, patronList) => { state.patronList = patronList },
     clearData: state => {
       state.data = []
     },
@@ -71,6 +85,8 @@ const clients = {
       state.self = null
       state.next = null
       state.last = null
+      state.clientList = []
+      state.patronList = []
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
@@ -88,6 +104,8 @@ const clients = {
     self: null,
     next: null,
     last: null,
+    clientList: [],
+    patronList: [],
   },
 }
 

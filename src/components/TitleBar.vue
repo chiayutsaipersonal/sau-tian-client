@@ -104,7 +104,10 @@ export default {
     this.resetComponentData()
   },
   methods: {
-    ...mapActions('clients', { getClientList: 'getClientList' }),
+    ...mapActions('clients', {
+      getClientList: 'getClientList',
+      getPatronList: 'getPatronList',
+    }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
     ...mapActions({ generateReport: 'generateReport' }),
     ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
@@ -116,7 +119,8 @@ export default {
       this.setProductFilter(null)
       return this.getClientList()
         .then(clientList => {
-          this.clientList = clientList
+          return this.getPatronList()
+        }).then(patronList => {
           return Promise.resolve()
         }).catch(error => {
           this.errorIndicator('客戶資料表讀取異常')

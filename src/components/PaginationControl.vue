@@ -4,9 +4,9 @@
     <div v-if="$route.name==='invoices'"
          class="level-left">
       <div class="level-item">
-        <b-select v-if="uniqueProducts.length>0"
+        <b-select v-if="unfilteredInvoiceData.length>0"
                   v-model="localProductFilter"
-                  size="is-medium"
+                  size="is-small"
                   placeholder="顯示所有產品"
                   :disabled="$route.name!=='invoices'"
                   @input="setProductFilter($event)">
@@ -17,21 +17,35 @@
             僅顯示 {{ productId }}
           </option>
         </b-select>
+        &nbsp;
+        <b-select v-if="unfilteredInvoiceData.length>0"
+                  v-model="localClientFilter"
+                  size="is-small"
+                  placeholder="顯示所有客戶"
+                  :disabled="$route.name!=='invoices'"
+                  @input="setClientFilter($event)">
+          <option :value="null">顯示所有客戶</option>
+          <option v-for="(clientId, index) in patronList.map(patron=>patron.id)"
+                  :value="clientId"
+                  :key="clientId">
+            僅顯示 【{{ clientId }}】 {{ patronList[index].name }}
+          </option>
+        </b-select>
       </div>
-      <div v-if="filteredData.length>0"
+      <div v-if="unfilteredInvoiceData.length>0"
            class="level-item">
         <b-field grouped
                  group-multiline>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-success is-medium">實際銷售總額</b-tag>
-              <b-tag type="is-info is-medium"> {{ actualTotalSales|currency }} </b-tag>
+              <b-tag type="is-success is-small">實際銷售總額</b-tag>
+              <b-tag type="is-info is-small"> {{ actualTotalSales|currency }} </b-tag>
             </b-taglist>
           </div>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-success is-medium">操作銷售總額</b-tag>
-              <b-tag type="is-info is-medium"
+              <b-tag type="is-success is-small">操作銷售總額</b-tag>
+              <b-tag type="is-info is-small"
                      :class="{'is-info': actualTotalSales===workingTotalSales, 'is-danger':actualTotalSales!==workingTotalSales}">
                 {{ workingTotalSales|currency }}
               </b-tag>
@@ -39,20 +53,20 @@
           </div>
         </b-field>
       </div>
-      <div v-if="filteredData.length>0"
+      <div v-if="unfilteredInvoiceData.length>0"
            class="level-item">
         <b-field grouped
                  group-multiline>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-black is-medium">實際銷售總量</b-tag>
-              <b-tag type="is-info is-medium"> {{ actualQuantitySoldTotal|quantity }} </b-tag>
+              <b-tag type="is-black is-small">實際銷售總量</b-tag>
+              <b-tag type="is-info is-small"> {{ actualQuantitySoldTotal|quantity }} </b-tag>
             </b-taglist>
           </div>
           <div class="control">
             <b-taglist attached>
-              <b-tag type="is-black is-medium">操作銷售總量</b-tag>
-              <b-tag type="is-info is-medium"
+              <b-tag type="is-black is-small">操作銷售總量</b-tag>
+              <b-tag type="is-info is-small"
                      :class="{'is-info': actualQuantitySoldTotal===workingQuantitySoldTotal, 'is-danger':actualQuantitySoldTotal!==workingQuantitySoldTotal}">
                 {{ workingQuantitySoldTotal|quantity }}
               </b-tag>
@@ -163,6 +177,7 @@ export default {
       localCurrentPage: null,
       localPerPage: null,
       localProductFilter: null,
+      localClientFilter: null,
     }
   },
   computed: {
@@ -170,7 +185,12 @@ export default {
       filteredData: 'filteredData',
       uniqueProducts: 'uniqueProducts',
     }),
-    ...mapState('invoices', { productFilter: 'productFilter' }),
+    ...mapState('clients', { patronList: 'patronList' }),
+    ...mapState('invoices', {
+      unfilteredInvoiceData: 'data',
+      clientFilter: 'clientFilter',
+      productFilter: 'productFilter',
+    }),
     actualTotalSales () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
         return prevEntry + currentEntry.actualInvoiceValue
@@ -197,6 +217,9 @@ export default {
     currentPage () { return this.$store.state[this.$route.name].currentPage },
   },
   watch: {
+    clientFilter (clientFilter) {
+      this.localClientFilter = clientFilter
+    },
     productFilter (productFilter) {
       this.localProductFilter = productFilter
     },
@@ -208,7 +231,10 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
+    ...mapMutations('invoices', {
+      setClientFilter: 'setClientFilter',
+      setProductFilter: 'setProductFilter',
+    }),
     changePage (perPage, currentPage) {
       let paginationQuery = { perPage, currentPage }
       return this.$store
