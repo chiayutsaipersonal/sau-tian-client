@@ -110,12 +110,16 @@ export default {
     }),
     ...mapActions('invoices', { fetchInvoiceData: 'fetch' }),
     ...mapActions({ generateReport: 'generateReport' }),
-    ...mapMutations('invoices', { setProductFilter: 'setProductFilter' }),
+    ...mapMutations('invoices', {
+      setClientFilter: 'setClientFilter',
+      setProductFilter: 'setProductFilter',
+    }),
     resetComponentData () {
       this.year = moment(new Date()).format('YYYY')
       this.selectedPeriod = parseInt(moment(new Date()).format('M')) - 1
     },
     getLiveData () {
+      this.setClientFilter(null)
       this.setProductFilter(null)
       return this.getClientList()
         .then(clientList => {
