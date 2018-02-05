@@ -53,9 +53,25 @@
             {{ props.row.asp|currency }}
           </b-table-column>
 
-          <b-table-column label="庫存數"
-                          numeric>
-            {{ props.row.stockQty }}
+          <b-table-column label="庫存數">
+            <b-taglist v-if="props.row.conversionFactorId"
+                       attached>
+              <b-tag v-if="props.row.customStockQty!==null"
+                     type="is-danger is-small">
+                顯示: {{ props.row.customStockQty|quantity }}
+              </b-tag>
+              <b-tag v-if="props.row.stockQty!==null"
+                     type="is-info is-small">
+                實際: {{ props.row.stockQty|quantity }}
+              </b-tag>
+              <b-tag v-if="(props.row.customStockQty===null) && (props.row.stockQty===null)"
+                     type="is-warning is-small">
+                空白
+              </b-tag>
+            </b-taglist>
+            <b-tag v-else>
+              不須顯示
+            </b-tag>
           </b-table-column>
 
           <b-table-column label="單位"
@@ -109,7 +125,7 @@
             <div class="th-wrap is-numeric"> 進貨單價 </div>
           </th>
           <th>
-            <div class="th-wrap is-numeric"> 庫存數 </div>
+            <div class="th-wrap"> 庫存數 </div>
           </th>
           <th>
             <div class="th-wrap is-centered"> 單位 </div>
@@ -150,9 +166,7 @@ export default {
     errorIndicator,
   ],
   data () {
-    return {
-      editPaneInView: [],
-    }
+    return { editPaneInView: [] }
   },
   computed: {
     ...mapState({

@@ -34,11 +34,24 @@
 
     <b-upload v-if="$route.name==='products'"
               v-model="conversionFactorFiles"
-              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               @input="handleConvFactorFileUpload($event)">
+      <!-- accept=".xlsx" -->
+      <!-- accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" -->
       <a class="button is-danger is-fullwidth is-medium">
         <span>
           <small>上傳轉換率</small>
+        </span>
+      </a>
+    </b-upload>
+
+    <b-upload v-if="$route.name==='products'"
+              v-model="customStockQtyFiles"
+              @input="handleCustomStockQtyFileUpload($event)">
+      <!-- accept=".xlsx" -->
+      <!-- accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" -->
+      <a class="button is-danger is-fullwidth is-medium">
+        <span>
+          <small>上傳庫存量</small>
         </span>
       </a>
     </b-upload>
@@ -73,6 +86,7 @@ export default {
   data () {
     return {
       conversionFactorFiles: [],
+      customStockQtyFiles: [],
     }
   },
   computed: {
@@ -111,8 +125,12 @@ export default {
       })
     },
     handleConvFactorFileUpload (files) {
-      let formData = new FormData()
+      // console.log(files)
+      let fileNameParts = files[0].name.split('.')
+      let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
+      if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
       if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
+      let formData = new FormData()
       formData.append('conversionFactors', files[0])
       this.$dialog.confirm({
         message: '確認上傳產品轉換率資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
@@ -124,7 +142,29 @@ export default {
           })
           .catch(error => {
             console.error(error)
-            return this.displayErrorDialog('產品轉換率批次上傳成功')
+            return this.displayErrorDialog('產品轉換率批次上傳失敗')
+          }),
+      })
+    },
+    handleCustomStockQtyFileUpload (files) {
+      // console.log(files)
+      let fileNameParts = files[0].name.split('.')
+      let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
+      if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
+      if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
+      let formData = new FormData()
+      formData.append('customStockQuantities', files[0])
+      this.$dialog.confirm({
+        message: '確認上傳產品庫存量資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
+        onConfirm: () => this.$store
+          .dispatch('products/uploadStock', formData)
+          .then(() => {
+            this.$dialog.alert('產品庫存量批次上傳成功')
+            return this.reloadRouteData()
+          })
+          .catch(error => {
+            console.error(error)
+            return this.displayErrorDialog('產品庫存量批次上傳失敗')
           }),
       })
     },
@@ -158,7 +198,8 @@ export default {
   padding: 20px;
 }
 
-button {
+button,
+a.button {
   margin-top: 5px;
   margin-bottom: 5px;
   display: flex;

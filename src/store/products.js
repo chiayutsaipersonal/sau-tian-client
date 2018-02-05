@@ -56,6 +56,22 @@ const products = {
         return Promise.reject(error)
       })
     },
+    uploadStock: (context, data) => {
+      context.commit('startLoading', null, { root: true })
+      return axios({
+        method: 'post',
+        headers: { 'Content-Type': 'multipart/form-data' },
+        url: '/sauTian/api/products/uploadStock',
+        data,
+      }).then(() => {
+        context.commit('endLoading', null, { root: true })
+        return Promise.resolve()
+      }).catch(error => {
+        context.commit('reset')
+        context.commit('endLoading', null, { root: true })
+        return Promise.reject(error)
+      })
+    },
     upsert: (context, payload) => {
       context.commit('startLoading', null, { root: true })
       return axios({
