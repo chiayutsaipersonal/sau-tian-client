@@ -6,22 +6,28 @@ const invoices = {
   actions: {
     fetch: (context, payload = {}) => {
       context.commit('clearData')
-      let url = `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
-      if (payload.perPage && payload.currentPage) url += `&per_page=${payload.perPage}&page=${payload.currentPage}`
+      let url = `/sauTian/api/invoices?startDate=${
+        context.rootState.startDate
+      }&endDate=${context.rootState.endDate}`
+      if (payload.perPage && payload.currentPage) {
+        url += `&per_page=${payload.perPage}&page=${payload.currentPage}`
+      }
       if (payload.productId) url += `&productId=${payload.productId}`
       context.commit('startLoading', null, { root: true })
       return axios({
         method: 'get',
         url,
-      }).then(serverResponse => {
-        context.commit('register', serverResponse.data)
-        context.commit('endLoading', null, { root: true })
-        return Promise.resolve()
-      }).catch(error => {
-        context.commit('reset')
-        context.commit('endLoading', null, { root: true })
-        return Promise.reject(error)
       })
+        .then(serverResponse => {
+          context.commit('register', serverResponse.data)
+          context.commit('endLoading', null, { root: true })
+          return Promise.resolve()
+        })
+        .catch(error => {
+          context.commit('reset')
+          context.commit('endLoading', null, { root: true })
+          return Promise.reject(error)
+        })
     },
     upsert: (context, payload) => {
       let url = '/sauTian/api/invoices'
@@ -30,36 +36,47 @@ const invoices = {
         method: 'post',
         url,
         data: payload,
-      }).then(serverResponse => {
-        context.commit('update', serverResponse.data.data)
-        context.commit('endLoading', null, { root: true })
-        return Promise.resolve()
-      }).catch(error => {
-        context.commit('endLoading', null, { root: true })
-        return Promise.reject(error)
       })
+        .then(serverResponse => {
+          context.commit('update', serverResponse.data.data)
+          context.commit('endLoading', null, { root: true })
+          return Promise.resolve()
+        })
+        .catch(error => {
+          context.commit('endLoading', null, { root: true })
+          return Promise.reject(error)
+        })
     },
     delete: (context, productId = null) => {
       context.commit('clearData')
-      let url = productId === null
-        ? `/sauTian/api/invoices?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
-        : `/sauTian/api/invoices/products/${productId}?startDate=${context.rootState.startDate}&endDate=${context.rootState.endDate}`
+      let url =
+        productId === null
+          ? `/sauTian/api/invoices?startDate=${
+            context.rootState.startDate
+          }&endDate=${context.rootState.endDate}`
+          : `/sauTian/api/invoices/products/${productId}?startDate=${
+            context.rootState.startDate
+          }&endDate=${context.rootState.endDate}`
       context.commit('startLoading', null, { root: true })
       return axios({
         method: 'delete',
         url,
-      }).then(() => {
-        context.commit('endLoading', null, { root: true })
-        return Promise.resolve()
-      }).catch(error => {
-        context.commit('reset')
-        context.commit('endLoading', null, { root: true })
-        return Promise.reject(error)
       })
+        .then(() => {
+          context.commit('endLoading', null, { root: true })
+          return Promise.resolve()
+        })
+        .catch(error => {
+          context.commit('reset')
+          context.commit('endLoading', null, { root: true })
+          return Promise.reject(error)
+        })
     },
   },
   mutations: {
-    clearData: state => { state.data = [] },
+    clearData: state => {
+      state.data = []
+    },
     update: (state, payload) => {
       let index = state.data.findIndex(entry => {
         return entry.customSalesDataId === payload.id
@@ -70,9 +87,10 @@ const invoices = {
       a._preserved = payload._preserved
       a._quantity = payload._quantity
       a._unitPrice = payload._unitPrice
-      a.checkboxDisabled = (a.areaId !== null) && ((a.areaId >= 1) && (a.areaId <= 4))
-        ? true
-        : a._clientId === null
+      a.checkboxDisabled =
+        a.areaId !== null && (a.areaId >= 1 && a.areaId <= 4)
+          ? true
+          : a._clientId === null
     },
     register: (state, payload) => {
       payload.data.forEach((entry, index) => {
@@ -82,7 +100,10 @@ const invoices = {
           state.data[index].customSalesDataId = uuidV4().toLocaleUpperCase()
         }
         if (entry._preserved === null) {
-          if ((entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))) {
+          if (
+            entry.areaId !== null &&
+            (entry.areaId >= 1 && entry.areaId <= 4)
+          ) {
             state.data[index]._preserved = true
           } else {
             state.data[index]._preserved = false
@@ -90,9 +111,10 @@ const invoices = {
         } else {
           state.data[index]._preserved = entry._preserved === 1
         }
-        entry.checkboxDisabled = (entry.areaId !== null) && ((entry.areaId >= 1) && (entry.areaId <= 4))
-          ? true
-          : entry._clientId === null
+        entry.checkboxDisabled =
+          entry.areaId !== null && (entry.areaId >= 1 && entry.areaId <= 4)
+            ? true
+            : entry._clientId === null
       })
       if (payload.pagination) {
         state.totalRecords = payload.pagination.totalRecords
@@ -130,6 +152,7 @@ const invoices = {
       state.last = null
       state.productFilter = null
       state.clientFilter = null
+      state.deptFilter = null
     },
     setLoadingState: (state, loadingState) => {
       state.loading = loadingState
@@ -140,36 +163,54 @@ const invoices = {
     setClientFilter: (state, clientId) => {
       state.clientFilter = clientId
     },
+    setDeptFilter: (state, dept) => {
+      state.deptFilter = dept
+    },
   },
   getters: {
     isLoading: state => state.loading,
     isUpdating: state => state.updating,
-    uniqueProducts: state => [...new Set(state.data.map(item => item.productId))],
+    uniqueProducts: state => [
+      ...new Set(state.data.map(item => item.productId)),
+    ],
     filteredData: state => {
       let pf = state.productFilter
       let cf = state.clientFilter
+      let df = state.deptFilter
       let workingData = state.data.filter(entry => {
-        let pFilterResult = entry.productId === state.productFilter
-        let cFilterResult = (entry._clientId || entry.clientId) === state.clientFilter
-        return ((pf === null) && (cf === null))
-          ? true : ((pf !== null) && (cf !== null))
-            ? pFilterResult && cFilterResult
-            : (pf !== null) ? pFilterResult : cFilterResult
+        let pFilterResult = entry.productId === pf
+        let cFilterResult = (entry._clientId || entry.clientId) === cf
+        let dFilterResult = entry.dept
+          ? entry.dept.toLowerCase().includes(df)
+          : false
+        return pf === null && cf === null && df === null
+          ? true
+          : (pf === null ? true : pFilterResult) &&
+              (cf === null ? true : cFilterResult) &&
+              (df === null ? true : dFilterResult)
+        // return ((pf === null) && (cf === null))
+        //   ? true : ((pf !== null) && (cf !== null))
+        //     ? pFilterResult && cFilterResult
+        //     : (pf !== null) ? pFilterResult : cFilterResult
       })
       for (let counter = 0; counter < workingData.length; counter++) {
         let entry = workingData[counter]
         if (entry._preserved) {
           // calculate inv value from working attributes if existed
-          let unitPrice = entry._unitPrice !== null ? entry._unitPrice : entry.unitPrice
-          let quantity = entry._quantity !== null ? entry._quantity : entry.quantity
+          let unitPrice =
+            entry._unitPrice !== null ? entry._unitPrice : entry.unitPrice
+          let quantity =
+            entry._quantity !== null ? entry._quantity : entry.quantity
           workingData[counter].workingInvoiceValue = unitPrice * quantity
           workingData[counter].workingSalesQuantity = quantity
-          workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+          workingData[counter].actualInvoiceValue =
+            entry.unitPrice * entry.quantity
           workingData[counter].actualSalesQuantity = entry.quantity
         } else {
           workingData[counter].workingInvoiceValue = 0
           workingData[counter].workingSalesQuantity = 0
-          workingData[counter].actualInvoiceValue = entry.unitPrice * entry.quantity
+          workingData[counter].actualInvoiceValue =
+            entry.unitPrice * entry.quantity
           workingData[counter].actualSalesQuantity = entry.quantity
         }
       }
@@ -212,6 +253,7 @@ const invoices = {
     last: null,
     productFilter: null,
     clientFilter: null,
+    deptFilter: null,
   },
 }
 

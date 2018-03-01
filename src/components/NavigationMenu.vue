@@ -34,9 +34,8 @@
 
     <b-upload v-if="$route.name==='products'"
               v-model="conversionFactorFiles"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               @input="handleConvFactorFileUpload($event)">
-      <!-- accept=".xlsx" -->
-      <!-- accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" -->
       <a class="button is-danger is-fullwidth is-medium">
         <span>
           <small>上傳轉換率</small>
@@ -46,9 +45,8 @@
 
     <b-upload v-if="$route.name==='products'"
               v-model="customStockQtyFiles"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               @input="handleCustomStockQtyFileUpload($event)">
-      <!-- accept=".xlsx" -->
-      <!-- accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" -->
       <a class="button is-danger is-fullwidth is-medium">
         <span>
           <small>上傳庫存量</small>
@@ -126,10 +124,10 @@ export default {
     },
     handleConvFactorFileUpload (files) {
       // console.log(files)
-      let fileNameParts = files[0].name.split('.')
-      let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
-      if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
-      if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
+      // let fileNameParts = files[0].name.split('.')
+      // let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
+      // if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
+      // if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
       let formData = new FormData()
       formData.append('conversionFactors', files[0])
       this.$dialog.confirm({
@@ -148,9 +146,9 @@ export default {
     },
     handleCustomStockQtyFileUpload (files) {
       // console.log(files)
-      let fileNameParts = files[0].name.split('.')
-      let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
-      if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
+      // let fileNameParts = files[0].name.split('.')
+      // let hasExcelExt = (fileNameParts[fileNameParts.length - 1] === 'xls') || (fileNameParts[fileNameParts.length - 1] === 'xlsx')
+      // if (!hasExcelExt) return this.displayErrorDialog('僅接受 .xls 或 .xlsx 檔案')
       if (!files.length) return this.displayErrorDialog('未正確接獲上傳資料')
       let formData = new FormData()
       formData.append('customStockQuantities', files[0])

@@ -37,6 +37,12 @@
                   <b-tag type="is-info is-small">{{ props.row.conversionFactorId }}</b-tag>
                 </b-taglist>
               </div>
+              <div class="control">
+                <b-tag v-if="props.row.dept"
+                       type="is-dark is-small">
+                  {{ props.row.dept }}
+                </b-tag>
+              </div>
             </b-field>
           </b-table-column>
 
@@ -161,10 +167,7 @@ export default {
     },
   },
   components: { ProductEditPane },
-  mixins: [
-    displayErrorDialog,
-    errorIndicator,
-  ],
+  mixins: [displayErrorDialog, errorIndicator],
   data () {
     return { editPaneInView: [] }
   },
@@ -186,21 +189,21 @@ export default {
         return record
       })
     },
-    isEmpty () { return this.totalRecords === 0 },
+    isEmpty () {
+      return this.totalRecords === 0
+    },
   },
   mounted () {
     if (this.isEmpty) {
-      return this
-        .fetch({
-          perPage: this.perPage,
-          currentPage: this.currentPage,
-        })
-        .catch(error => {
-          if (error.response) console.error(error.response)
-          return error.response.status && (error.response.status === 503)
-            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
-            : this.displayErrorDialog('產品資料表讀取異常')
-        })
+      return this.fetch({
+        perPage: this.perPage,
+        currentPage: this.currentPage,
+      }).catch(error => {
+        if (error.response) console.error(error.response)
+        return error.response.status && error.response.status === 503
+          ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+          : this.displayErrorDialog('產品資料表讀取異常')
+      })
     }
   },
   beforeDestroy () {
@@ -221,11 +224,10 @@ export default {
       return this.clear(productId)
         .then(() => {
           this.$dialog.alert('產品轉換率重置成功')
-          return this
-            .fetch({
-              perPage: this.perPage,
-              currentPage: this.currentPage,
-            })
+          return this.fetch({
+            perPage: this.perPage,
+            currentPage: this.currentPage,
+          })
             .then(() => Promise.resolve())
             .catch(error => {
               console.error(error)
@@ -241,11 +243,10 @@ export default {
       return this.upsert(payload)
         .then(() => {
           this.$dialog.alert('產品轉換率寫入成功')
-          return this
-            .fetch({
-              perPage: this.perPage,
-              currentPage: this.currentPage,
-            })
+          return this.fetch({
+            perPage: this.perPage,
+            currentPage: this.currentPage,
+          })
             .then(() => Promise.resolve())
             .catch(error => {
               console.error(error)

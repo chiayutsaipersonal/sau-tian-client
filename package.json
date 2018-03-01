@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "axios": "^0.17.1",
-    "buefy": "^0.6.3",
+    "buefy": "git+https://github.com/rafaelpimpa/buefy.git#dev",
     "file-saver": "^1.3.3",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.14",

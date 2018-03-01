@@ -9,7 +9,7 @@
                   size="is-small"
                   placeholder="顯示所有產品"
                   :disabled="$route.name!=='invoices'"
-                  @input="setProductFilter($event)">
+                  @input="updateProductFilter($event)">
           <option :value="null">顯示所有產品</option>
           <option v-for="productId in uniqueProducts"
                   :value="productId"
@@ -23,13 +23,23 @@
                   size="is-small"
                   placeholder="顯示所有客戶"
                   :disabled="$route.name!=='invoices'"
-                  @input="setClientFilter($event)">
+                  @input="updateClientFilter($event)">
           <option :value="null">顯示所有客戶</option>
           <option v-for="(clientId, index) in patronList.map(patron=>patron.id)"
                   :value="clientId"
                   :key="clientId">
             僅顯示 【{{ clientId }}】 {{ patronList[index].name }}
           </option>
+        </b-select>
+        &nbsp;
+        <b-select v-if="unfilteredInvoiceData.length>0"
+                  v-model="localDeptFilter"
+                  size="is-small"
+                  :disabled="($route.name!=='invoices')||(localProductFilter!==null)"
+                  @input="setDeptFilter($event)">
+          <option :value="null">部門篩選</option>
+          <option value="ipd">IPD</option>
+          <option value="c3sd">C3SD</option>
         </b-select>
       </div>
       <div v-if="unfilteredInvoiceData.length>0"
@@ -178,6 +188,7 @@ export default {
       localPerPage: null,
       localProductFilter: null,
       localClientFilter: null,
+      localDeptFilter: null,
     }
   },
   computed: {
@@ -211,10 +222,18 @@ export default {
         return prevEntry + currentEntry.workingSalesQuantity
       }, 0)
     },
-    totalRecords () { return this.$store.state[this.$route.name].totalRecords },
-    perPage () { return this.$store.state[this.$route.name].perPage },
-    totalPages () { return this.$store.state[this.$route.name].totalPages },
-    currentPage () { return this.$store.state[this.$route.name].currentPage },
+    totalRecords () {
+      return this.$store.state[this.$route.name].totalRecords
+    },
+    perPage () {
+      return this.$store.state[this.$route.name].perPage
+    },
+    totalPages () {
+      return this.$store.state[this.$route.name].totalPages
+    },
+    currentPage () {
+      return this.$store.state[this.$route.name].currentPage
+    },
   },
   watch: {
     clientFilter (clientFilter) {
@@ -233,6 +252,7 @@ export default {
   methods: {
     ...mapMutations('invoices', {
       setClientFilter: 'setClientFilter',
+      setDeptFilter: 'setDeptFilter',
       setProductFilter: 'setProductFilter',
     }),
     changePage (perPage, currentPage) {
@@ -243,6 +263,16 @@ export default {
           console.error(error)
           return this.displayErrorDialog(`${this.viewLabel()}資料表讀取異常`)
         })
+    },
+    updateProductFilter (event) {
+      this.setProductFilter(event)
+      this.localDeptFilter = null
+      this.setDeptFilter(null)
+    },
+    updateClientFilter (event) {
+      this.setClientFilter(event)
+      this.localDeptFilter = null
+      this.setDeptFilter(null)
     },
   },
 }

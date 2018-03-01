@@ -84,6 +84,10 @@
                 <b-tag type="is-info is-small">
                   {{ props.row.conversionFactorId }}
                 </b-tag>
+                <b-tag v-if="props.row.dept"
+                       type="is-dark is-small">
+                  {{ props.row.dept }}
+                </b-tag>
                 <b-tag type="is-small">
                   {{ props.row.productName }}
                 </b-tag>
@@ -202,10 +206,7 @@ export default {
       return numeral(value).format('0,0[.]00')
     },
   },
-  mixins: [
-    displayErrorDialog,
-    errorIndicator,
-  ],
+  mixins: [displayErrorDialog, errorIndicator],
   computed: {
     ...mapState('invoices', {
       loading: 'loading',
@@ -226,18 +227,22 @@ export default {
     ...mapGetters('invoices', { filteredData: 'filteredData' }),
     actualSum () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return prevEntry + (currentEntry.actualInvoiceValue)
+        return prevEntry + currentEntry.actualInvoiceValue
       }, 0)
     },
     workingDataSum () {
       return this.filteredData.reduce((prevEntry, currentEntry) => {
-        return prevEntry + (currentEntry.workingInvoiceValue)
+        return prevEntry + currentEntry.workingInvoiceValue
       }, 0)
     },
-    isEmpty () { return this.totalRecords === 0 },
+    isEmpty () {
+      return this.totalRecords === 0
+    },
   },
   mounted () {
-    if (this.isEmpty) { return this.getLiveData() }
+    if (this.isEmpty) {
+      return this.getLiveData()
+    }
   },
   beforeDestroy: function () {
     this.$store.commit('clients/reset')
@@ -269,32 +274,39 @@ export default {
       return this.getClientList()
         .then(clientList => {
           return this.getPatronList()
-        }).then(patronList => {
+        })
+        .then(patronList => {
           return Promise.resolve()
-        }).catch(error => {
+        })
+        .catch(error => {
           this.errorIndicator('客戶資料表讀取異常')
           return Promise.reject(error)
-        }).then(() => {
-          return this.fetchInvoiceData()
-            .catch(error => {
-              this.errorIndicator('銷售資料表讀取異常')
-              return Promise.reject(error)
-            })
-        }).catch(error => {
+        })
+        .then(() => {
+          return this.fetchInvoiceData().catch(error => {
+            this.errorIndicator('銷售資料表讀取異常')
+            return Promise.reject(error)
+          })
+        })
+        .catch(error => {
           if (error.response) console.error(error.response)
-          return error.response.status && (error.response.status === 503)
+          return error.response.status && error.response.status === 503
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
         })
     },
     markUnpreservedRecord (row, index) {
-      return this.preservedIndexList.indexOf(row.index) === -1 ? 'not-preserved' : ''
+      return this.preservedIndexList.indexOf(row.index) === -1
+        ? 'not-preserved'
+        : ''
     },
     processPreservationUpdate (recordBeforeUpdate, preservationState) {
       this.$store
         .dispatch(
           'invoices/upsert',
-          Object.assign({}, recordBeforeUpdate, { _preserved: preservationState })
+          Object.assign({}, recordBeforeUpdate, {
+            _preserved: preservationState,
+          })
         )
         .catch(error => {
           console.log(error)
@@ -305,7 +317,10 @@ export default {
       this.$store
         .dispatch(
           'invoices/upsert',
-          Object.assign({}, recordBeforeUpdate, { _clientId: _clientId, _preserved: null })
+          Object.assign({}, recordBeforeUpdate, {
+            _clientId: _clientId,
+            _preserved: null,
+          })
         )
         .catch(error => {
           console.log(error)
@@ -321,9 +336,11 @@ export default {
         },
         onConfirm: _unitPrice => {
           switch (_unitPrice.toString()) {
-            case (recordBeforeUpdate._unitPrice ? recordBeforeUpdate._unitPrice.toString() : null):
+            case recordBeforeUpdate._unitPrice
+              ? recordBeforeUpdate._unitPrice.toString()
+              : null:
               return
-            case (recordBeforeUpdate.unitPrice.toString()):
+            case recordBeforeUpdate.unitPrice.toString():
               return this.processUnitPriceUpdate(recordBeforeUpdate, null)
             default:
               return this.processUnitPriceUpdate(recordBeforeUpdate, _unitPrice)
@@ -333,7 +350,10 @@ export default {
     },
     processUnitPriceUpdate (recordBeforeUpdate, _unitPrice) {
       this.$store
-        .dispatch('invoices/upsert', Object.assign({}, recordBeforeUpdate, { _unitPrice: _unitPrice }))
+        .dispatch(
+          'invoices/upsert',
+          Object.assign({}, recordBeforeUpdate, { _unitPrice: _unitPrice })
+        )
         .catch(error => {
           console.log(error)
           return this.displayErrorDialog('更改售價失敗')
@@ -348,9 +368,11 @@ export default {
         },
         onConfirm: _quantity => {
           switch (_quantity.toString()) {
-            case (recordBeforeUpdate._quantity ? recordBeforeUpdate._quantity.toString() : null):
+            case recordBeforeUpdate._quantity
+              ? recordBeforeUpdate._quantity.toString()
+              : null:
               return
-            case (recordBeforeUpdate.quantity.toString()):
+            case recordBeforeUpdate.quantity.toString():
               return this.processQuantityUpdate(recordBeforeUpdate, null)
             default:
               return this.processQuantityUpdate(recordBeforeUpdate, _quantity)
@@ -360,7 +382,10 @@ export default {
     },
     processQuantityUpdate (recordBeforeUpdate, _quantity) {
       this.$store
-        .dispatch('invoices/upsert', Object.assign({}, recordBeforeUpdate, { _quantity: _quantity }))
+        .dispatch(
+          'invoices/upsert',
+          Object.assign({}, recordBeforeUpdate, { _quantity: _quantity })
+        )
         .catch(error => {
           console.log(error)
           return this.displayErrorDialog('更改銷售數量失敗')
