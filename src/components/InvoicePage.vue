@@ -332,6 +332,7 @@ export default {
         message: '請輸入新單價或取消單價更新',
         inputAttrs: {
           type: 'number',
+          step: '0.01',
           value: recordBeforeUpdate._unitPrice || recordBeforeUpdate.unitPrice,
         },
         onConfirm: _unitPrice => {
