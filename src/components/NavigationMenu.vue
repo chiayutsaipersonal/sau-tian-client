@@ -1,25 +1,25 @@
 <template>
   <aside id="navigation-menu">
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-focused':$route.name==='home'}"
+    <button :class="{'is-focused':$route.name==='home'}"
+            class="button is-info is-outlined is-fullwidth is-medium"
             @click="switchRoute('/sauTian')">
       操作說明
     </button>
 
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-focused':$route.name==='clients'}"
+    <button :class="{'is-focused':$route.name==='clients'}"
+            class="button is-info is-outlined is-fullwidth is-medium"
             @click="switchRoute('/sauTian/clients')">
       客戶列表
     </button>
 
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-focused':$route.name==='products'}"
+    <button :class="{'is-focused':$route.name==='products'}"
+            class="button is-info is-outlined is-fullwidth is-medium"
             @click="switchRoute('/sauTian/products')">
       產品列表
     </button>
 
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            :class="{'is-focused':$route.name==='invoices'}"
+    <button :class="{'is-focused':$route.name==='invoices'}"
+            class="button is-info is-outlined is-fullwidth is-medium"
             @click="switchRoute('/sauTian/invoices')">
       銷售資料
     </button>
@@ -54,8 +54,8 @@
       </a>
     </b-upload>
 
-    <button class="button is-info is-outlined is-fullwidth is-medium"
-            v-if="$route.name!=='home'&&totalRecords>0"
+    <button v-if="$route.name!=='home'&&totalRecords>0"
+            class="button is-info is-outlined is-fullwidth is-medium"
             @click="switchRecordViewMode">
       <template v-if="!narrowRecords">
         窄幅檢視
@@ -76,11 +76,7 @@ import viewLabel from '../mixins/viewLabel'
 
 export default {
   name: 'NavigationMenu',
-  mixins: [
-    displayErrorDialog,
-    switchRoute,
-    viewLabel,
-  ],
+  mixins: [displayErrorDialog, switchRoute, viewLabel],
   data () {
     return {
       conversionFactorFiles: [],
@@ -105,9 +101,16 @@ export default {
       viewWideRecords: 'viewWideRecords',
     }),
     deleteCustomSalesRecord () {
-      let message = this.productFilter === null
-        ? `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間的客製銷售資料，請【確認】或【取消】！！！`
-        : `即將清除 '${this.startDate}' ~ '${this.endDate}' 之間並且相關產品 ID: '${this.productFilter}'的客製銷售資料，請【確認】或【取消】！！！`
+      let message =
+        this.productFilter === null
+          ? `即將清除 '${this.startDate}' ~ '${
+            this.endDate
+          }' 之間的客製銷售資料，請【確認】或【取消】！！！`
+          : `即將清除 '${this.startDate}' ~ '${
+            this.endDate
+          }' 之間並且相關產品 ID: '${
+            this.productFilter
+          }'的客製銷售資料，請【確認】或【取消】！！！`
       this.$dialog.confirm({
         message,
         onConfirm: () => {
@@ -131,17 +134,19 @@ export default {
       let formData = new FormData()
       formData.append('conversionFactors', files[0])
       this.$dialog.confirm({
-        message: '確認上傳產品轉換率資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
-        onConfirm: () => this.$store
-          .dispatch('products/upload', formData)
-          .then(() => {
-            this.$dialog.alert('產品轉換率批次上傳成功')
-            return this.reloadRouteData()
-          })
-          .catch(error => {
-            console.error(error)
-            return this.displayErrorDialog('產品轉換率批次上傳失敗')
-          }),
+        message:
+          '確認上傳產品轉換率資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
+        onConfirm: () =>
+          this.$store
+            .dispatch('products/upload', formData)
+            .then(() => {
+              this.$dialog.alert('產品轉換率批次上傳成功')
+              return this.reloadRouteData()
+            })
+            .catch(error => {
+              console.error(error)
+              return this.displayErrorDialog('產品轉換率批次上傳失敗')
+            }),
       })
     },
     handleCustomStockQtyFileUpload (files) {
@@ -153,17 +158,19 @@ export default {
       let formData = new FormData()
       formData.append('customStockQuantities', files[0])
       this.$dialog.confirm({
-        message: '確認上傳產品庫存量資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
-        onConfirm: () => this.$store
-          .dispatch('products/uploadStock', formData)
-          .then(() => {
-            this.$dialog.alert('產品庫存量批次上傳成功')
-            return this.reloadRouteData()
-          })
-          .catch(error => {
-            console.error(error)
-            return this.displayErrorDialog('產品庫存量批次上傳失敗')
-          }),
+        message:
+          '確認上傳產品庫存量資料，並批次修改？<br><strong>!!! 現有資料將不被保存 !!!</strong>',
+        onConfirm: () =>
+          this.$store
+            .dispatch('products/uploadStock', formData)
+            .then(() => {
+              this.$dialog.alert('產品庫存量批次上傳成功')
+              return this.reloadRouteData()
+            })
+            .catch(error => {
+              console.error(error)
+              return this.displayErrorDialog('產品庫存量批次上傳失敗')
+            }),
       })
     },
     reloadRouteData () {

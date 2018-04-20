@@ -3,22 +3,22 @@
     <b-field grouped
              position="is-right">
       <b-field expanded>
-        <b-input placeholder="3M 編號"
-                 size="is-large"
-                 v-model.trim.lazy="convFactorId" />
+        <b-input v-model.trim.lazy="convFactorId"
+                 placeholder="3M 編號"
+                 size="is-large" />
       </b-field>
       <b-field expanded>
-        <b-input type="number"
+        <b-input v-model.number.lazy="convFactor"
+                 type="number"
                  size="is-large"
                  step="0.1"
                  min="0"
-                 placeholder="轉換率"
-                 v-model.number.lazy="convFactor" />
+                 placeholder="轉換率" />
       </b-field>
       <b-field>
         <p class="control">
-          <button class="button is-info is-large"
-                  :disabled="isPrestine || hasEmptyValue"
+          <button :disabled="isPrestine || hasEmptyValue"
+                  class="button is-info is-large"
                   @click="confirmEdit">
             更新
           </button>
@@ -26,8 +26,8 @@
       </b-field>
       <b-field>
         <p class="control">
-          <button class="button is-success is-large"
-                  :disabled="!conversionFactorId"
+          <button :disabled="!conversionFactorId"
+                  class="button is-success is-large"
                   @click="confirmClear">
             重置
           </button>
@@ -91,15 +91,12 @@ export default {
   computed: {
     isPrestine () {
       return (
-        (this.convFactorId === this.conversionFactorId) &&
-        (this.convFactor === this.conversionFactor)
+        this.convFactorId === this.conversionFactorId &&
+        this.convFactor === this.conversionFactor
       )
     },
     hasEmptyValue () {
-      return (
-        (this.convFactorId === null) ||
-        (this.convFactor === null)
-      )
+      return this.convFactorId === null || this.convFactor === null
     },
   },
   watch: {
@@ -123,7 +120,9 @@ export default {
       if (convFactor === '') {
         this.convFactor = null
       } else {
-        if (this.convFactor !== null) this.convFactor = parseFloat(this.convFactor)
+        if (this.convFactor !== null) {
+          this.convFactor = parseFloat(this.convFactor)
+        }
       }
     },
   },
@@ -135,17 +134,20 @@ export default {
     ...mapActions('products', { check: 'check' }),
     confirmEdit () {
       this.$dialog.confirm({
-        message: `確認 "編修" 產品 【${this.id}】 ${this.name || '空白品名'} 轉換率資料？`,
-        onConfirm: () => this.$emit('edit', {
-          id: this.id,
-          conversionFactorId: this.convFactorId,
-          conversionFactor: this.convFactor,
-        }),
+        message: `確認 "編修" 產品 【${this.id}】 ${this.name ||
+          '空白品名'} 轉換率資料？`,
+        onConfirm: () =>
+          this.$emit('edit', {
+            id: this.id,
+            conversionFactorId: this.convFactorId,
+            conversionFactor: this.convFactor,
+          }),
       })
     },
     confirmClear () {
       this.$dialog.confirm({
-        message: `確認 "重置" 產品 【${this.id}】 ${this.name || '空白品名'} 轉換率資料?`,
+        message: `確認 "重置" 產品 【${this.id}】 ${this.name ||
+          '空白品名'} 轉換率資料?`,
         onConfirm: () => this.$emit('clear', this.id),
       })
     },

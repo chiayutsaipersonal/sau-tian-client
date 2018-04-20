@@ -112,8 +112,8 @@
           </section>
         </template>
 
-        <template slot="footer"
-                  v-if="!isEmpty">
+        <template v-if="!isEmpty"
+                  slot="footer">
           <th/>
           <th>
             <div class="th-wrap is-numeric is-centered"> 項次 </div>

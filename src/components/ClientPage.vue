@@ -70,8 +70,8 @@
           </section>
         </template>
 
-        <template slot="footer"
-                  v-if="!isEmpty">
+        <template v-if="!isEmpty"
+                  slot="footer">
           <th>
             <div class="th-wrap is-numeric is-centered">
               項次
@@ -141,10 +141,7 @@ import errorIndicator from '../mixins/errorIndicator'
 
 export default {
   name: 'ClientPage',
-  mixins: [
-    displayErrorDialog,
-    errorIndicator,
-  ],
+  mixins: [displayErrorDialog, errorIndicator],
   computed: {
     ...mapState({
       loading: 'loading',
@@ -163,21 +160,21 @@ export default {
         return record
       })
     },
-    isEmpty () { return this.totalRecords === 0 },
+    isEmpty () {
+      return this.totalRecords === 0
+    },
   },
   mounted: function () {
     if (this.isEmpty) {
-      return this
-        .fetch({
-          perPage: this.perPage,
-          currentPage: this.currentPage,
-        })
-        .catch(error => {
-          if (error.response) console.error(error.response)
-          return error.response.status && (error.response.status === 503)
-            ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
-            : this.displayErrorDialog('客戶資料表讀取異常')
-        })
+      return this.fetch({
+        perPage: this.perPage,
+        currentPage: this.currentPage,
+      }).catch(error => {
+        if (error.response) console.error(error.response)
+        return error.response.status && error.response.status === 503
+          ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
+          : this.displayErrorDialog('客戶資料表讀取異常')
+      })
     }
   },
   beforeDestroy: function () {

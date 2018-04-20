@@ -12,13 +12,13 @@
     <div class="level-right">
       <div class="level-item">
         <b-field position="is-right">
-          <b-input type="number"
+          <b-input v-model="year"
+                   type="number"
                    placeholder="檢視年度"
-                   v-model="year"
                    maxlength="4"
                    size="is-medium" />
-          <b-select placeholder="Select a name"
-                    v-model="selectedPeriod"
+          <b-select v-model="selectedPeriod"
+                    placeholder="Select a name"
                     size="is-medium">
             <option v-for="(period, index) in periodLabels"
                     :value="index"
@@ -54,11 +54,7 @@ import switchRoute from '../mixins/switchRoute'
 
 export default {
   name: 'TitleBar',
-  mixins: [
-    displayErrorDialog,
-    errorIndicator,
-    switchRoute,
-  ],
+  mixins: [displayErrorDialog, errorIndicator, switchRoute],
   data () {
     return {
       year: null,
@@ -80,9 +76,19 @@ export default {
     }
   },
   computed: {
-    selectedMonth () { return (this.selectedPeriod + 1) },
-    startDate () { return moment(new Date(`${this.year}-${this.selectedMonth}-01`)).format('YYYY-MM-DD') },
-    endDate () { return moment(new Date(this.startDate)).endOf('month').format('YYYY-MM-DD') },
+    selectedMonth () {
+      return this.selectedPeriod + 1
+    },
+    startDate () {
+      return moment(new Date(`${this.year}-${this.selectedMonth}-01`)).format(
+        'YYYY-MM-DD'
+      )
+    },
+    endDate () {
+      return moment(new Date(this.startDate))
+        .endOf('month')
+        .format('YYYY-MM-DD')
+    },
   },
   watch: {
     year () {
@@ -124,20 +130,25 @@ export default {
       return this.getClientList()
         .then(clientList => {
           return this.getPatronList()
-        }).then(patronList => {
+        })
+        .then(patronList => {
           return Promise.resolve()
-        }).catch(error => {
+        })
+        .catch(error => {
           this.errorIndicator('客戶資料表讀取異常')
           return Promise.reject(error)
-        }).then(() => {
-          return this.fetchInvoiceData()
-            .catch(error => {
-              this.errorIndicator('銷售資料表讀取異常')
-              return Promise.reject(error)
-            })
-        }).catch(error => {
+        })
+        .then(() => {
+          return this.fetchInvoiceData().catch(error => {
+            this.errorIndicator('銷售資料表讀取異常')
+            return Promise.reject(error)
+          })
+        })
+        .catch(error => {
           console.log(error)
-          return this.displayErrorDialog('資料讀取失敗，無法完成銷售資料表初始化')
+          return this.displayErrorDialog(
+            '資料讀取失敗，無法完成銷售資料表初始化'
+          )
         })
     },
     confirmLoadInvoiceData () {
@@ -152,7 +163,8 @@ export default {
     },
     confirmReload () {
       this.$dialog.confirm({
-        message: '<strong>程式將重新讀取最新 POS 資料，<br>請避免在讀取作業結束之前同時操作 POS 系統</strong>',
+        message:
+          '<strong>程式將重新讀取最新 POS 資料，<br>請避免在讀取作業結束之前同時操作 POS 系統</strong>',
         type: 'is-info',
         hasIcon: true,
         icon: 'exclamation-circle',
@@ -176,14 +188,16 @@ export default {
         })
         .catch(error => {
           if (error.response) console.error(error.response)
-          return error.response.status && (error.response.status === 503)
+          return error.response.status && error.response.status === 503
             ? this.errorIndicator('系統尚未準備完成，請稍後再繼續資料操作')
             : this.displayErrorDialog('POS 系統資料讀取失敗')
         })
     },
     confirmReportGeneration () {
       this.$dialog.confirm({
-        message: `是否開始輸出 '${this.startDate}' ~ '${this.endDate}' 區間的銷售資料報告？`,
+        message: `是否開始輸出 '${this.startDate}' ~ '${
+          this.endDate
+        }' 區間的銷售資料報告？`,
         type: 'is-info',
         hasIcon: true,
         icon: 'question-circle',
@@ -212,8 +226,10 @@ export default {
         })
         .catch(error => {
           if (error.response) console.error(error.response)
-          return error.response.status && (error.response.status === 503)
-            ? this.errorIndicator('系統未發現資料，請確認資料擷取區間是否正確。')
+          return error.response.status && error.response.status === 503
+            ? this.errorIndicator(
+              '系統未發現資料，請確認資料擷取區間是否正確。'
+            )
             : this.displayErrorDialog('報表輸出作業失敗 (o.O |||)')
         })
     },

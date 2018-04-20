@@ -6,9 +6,9 @@
       <div class="level-item">
         <b-select v-if="unfilteredInvoiceData.length>0"
                   v-model="localProductFilter"
+                  :disabled="$route.name!=='invoices'"
                   size="is-small"
                   placeholder="顯示所有產品"
-                  :disabled="$route.name!=='invoices'"
                   @input="updateProductFilter($event)">
           <option :value="null">顯示所有產品</option>
           <option v-for="productId in uniqueProducts"
@@ -20,9 +20,9 @@
         &nbsp;
         <b-select v-if="unfilteredInvoiceData.length>0"
                   v-model="localClientFilter"
+                  :disabled="$route.name!=='invoices'"
                   size="is-small"
                   placeholder="顯示所有客戶"
-                  :disabled="$route.name!=='invoices'"
                   @input="updateClientFilter($event)">
           <option :value="null">顯示所有客戶</option>
           <option v-for="(clientId, index) in patronList.map(patron=>patron.id)"
@@ -34,8 +34,8 @@
         &nbsp;
         <b-select v-if="unfilteredInvoiceData.length>0"
                   v-model="localDeptFilter"
-                  size="is-small"
                   :disabled="($route.name!=='invoices')||(localProductFilter!==null)"
+                  size="is-small"
                   @input="setDeptFilter($event)">
           <option :value="null">部門篩選</option>
           <option value="ipd">IPD</option>
@@ -55,8 +55,8 @@
           <div class="control">
             <b-taglist attached>
               <b-tag type="is-success is-small">操作銷售總額</b-tag>
-              <b-tag type="is-info is-small"
-                     :class="{'is-info': actualTotalSales===workingTotalSales, 'is-danger':actualTotalSales!==workingTotalSales}">
+              <b-tag :class="{'is-info': actualTotalSales===workingTotalSales, 'is-danger':actualTotalSales!==workingTotalSales}"
+                     type="is-info is-small">
                 {{ workingTotalSales|currency }}
               </b-tag>
             </b-taglist>
@@ -76,8 +76,8 @@
           <div class="control">
             <b-taglist attached>
               <b-tag type="is-black is-small">操作銷售總量</b-tag>
-              <b-tag type="is-info is-small"
-                     :class="{'is-info': actualQuantitySoldTotal===workingQuantitySoldTotal, 'is-danger':actualQuantitySoldTotal!==workingQuantitySoldTotal}">
+              <b-tag :class="{'is-info': actualQuantitySoldTotal===workingQuantitySoldTotal, 'is-danger':actualQuantitySoldTotal!==workingQuantitySoldTotal}"
+                     type="is-info is-small">
                 {{ workingQuantitySoldTotal|quantity }}
               </b-tag>
             </b-taglist>
@@ -92,9 +92,9 @@
     <div v-else
          class="level-right">
       <div class="level-item">
-        <button class="pagination-first button is-medium is-outlined"
-                @click="changePage(perPage, 1)"
-                :disabled="currentPage===1||currentPage===null">
+        <button :disabled="currentPage===1||currentPage===null"
+                class="pagination-first button is-medium is-outlined"
+                @click="changePage(perPage, 1)">
           <span class="icon is-medium">
             <i class="fa fa-angle-double-left fa-lg" />
           </span>
@@ -108,9 +108,9 @@
                         :simple="false"
                         @update:current="changePage(perPage, $event)" />
         </section>
-        <button class="pagination-last button is-medium is-outlined"
-                @click="changePage(perPage, totalPages)"
-                :disabled="(currentPage===totalPages) || (totalRecords===0)">
+        <button :disabled="(currentPage===totalPages) || (totalRecords===0)"
+                class="pagination-last button is-medium is-outlined"
+                @click="changePage(perPage, totalPages)">
           <span class="icon is-medium">
             <i class="fa fa-angle-double-right fa-lg" />
           </span>
@@ -119,8 +119,8 @@
       <div class="level-item">
         <b-select v-model="localCurrentPage"
                   :placeholder="`第 ${currentPage.toString()} 頁`"
-                  size="is-medium"
                   :disabled="totalPages===1"
+                  size="is-medium"
                   @input="changePage(perPage, $event)">
           <option v-for="pageNumber in totalPages"
                   :value="pageNumber"
@@ -132,28 +132,28 @@
       </div>
       <div class="level-item">
         <b-select v-model="localPerPage"
-                  size="is-medium"
                   :placeholder="`顯示 ${perPage.toString()} 筆資料`"
                   :disabled="$route.name==='invoices'"
+                  size="is-medium"
                   @input="changePage($event, 1)">
-          <option value="5"
-                  :disabled="perPage===5">
+          <option :disabled="perPage===5"
+                  value="5">
             顯示 5 筆資料
           </option>
-          <option value="10"
-                  :disabled="perPage===10">
+          <option :disabled="perPage===10"
+                  value="10">
             顯示 10 筆資料
           </option>
-          <option value="25"
-                  :disabled="perPage===25">
+          <option :disabled="perPage===25"
+                  value="25">
             顯示 25 筆資料
           </option>
-          <option value="50"
-                  :disabled="perPage===50">
+          <option :disabled="perPage===50"
+                  value="50">
             顯示 50 筆資料
           </option>
-          <option value="100"
-                  :disabled="perPage===100">
+          <option :disabled="perPage===100"
+                  value="100">
             顯示 100 筆資料
           </option>
         </b-select>
