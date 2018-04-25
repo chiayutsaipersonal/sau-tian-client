@@ -1,7 +1,7 @@
 <template>
   <li>
-    <b-collapse class="panel"
-                :open.sync="expanded">
+    <b-collapse :open.sync="expanded"
+                class="panel">
       <div slot="trigger"
            class="panel-heading">
         <strong>標題列以及系統控制項目</strong>

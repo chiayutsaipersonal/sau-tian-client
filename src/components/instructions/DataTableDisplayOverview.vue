@@ -1,7 +1,7 @@
 <template>
   <li>
-    <b-collapse class="panel"
-                :open.sync="expanded">
+    <b-collapse :open.sync="expanded"
+                class="panel">
       <div slot="trigger"
            class="panel-heading">
         <strong>資料顯示區</strong>
