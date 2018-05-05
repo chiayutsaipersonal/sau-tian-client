@@ -25,10 +25,10 @@
                   placeholder="顯示所有客戶"
                   @input="updateClientFilter($event)">
           <option :value="null">顯示所有客戶</option>
-          <option v-for="(clientId, index) in patronList.map(patron=>patron.id)"
-                  :value="clientId"
-                  :key="clientId">
-            僅顯示 【{{ clientId }}】 {{ patronList[index].name }}
+          <option v-for="client in patronList"
+                  :value="client.id"
+                  :key="client.id">
+            僅顯示 {{ client.areaId }} - 【{{ client.id }}】 {{ client.name }}
           </option>
         </b-select>
         &nbsp;
@@ -196,7 +196,7 @@ export default {
       filteredData: 'filteredData',
       uniqueProducts: 'uniqueProducts',
     }),
-    ...mapState('clients', { patronList: 'patronList' }),
+    ...mapState('clients', { patronList: 'clientList' }),
     ...mapState('invoices', {
       unfilteredInvoiceData: 'data',
       clientFilter: 'clientFilter',
